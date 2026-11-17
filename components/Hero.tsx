@@ -11,7 +11,7 @@ export default function Hero() {
   let n = 0; // running letter index for the staggered entrance
 
   const marquee = (
-    <div className="marquee absolute inset-x-0 bottom-[7vh] border-t border-line bg-bg/50 py-4 backdrop-blur-sm">
+    <div className="marquee absolute inset-x-0 bottom-[7vh] border-t border-line bg-bg/80 py-4">
       <ul className="marquee-track gap-12 text-muted" aria-label={c.nav.stack}>
         {[...h.stack, ...h.stack].map((s, i) => (
           <li key={i} aria-hidden={i >= h.stack.length} className="flex shrink-0 items-center gap-3">
@@ -26,14 +26,6 @@ export default function Hero() {
   return (
     <Scene id="top" label={c.name} set="panorama" time="night" seed={1} moon after={marquee}>
       <div className="flex -translate-y-[6vh] flex-col items-center text-center">
-        <p className="fade-in inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/50 py-1.5 pr-4 pl-3 text-sm backdrop-blur [--delay:0s]">
-          <span className="relative flex size-2" aria-hidden>
-            <span className="absolute inset-0 animate-ping rounded-full bg-sun opacity-60" />
-            <span className="relative size-2 rounded-full bg-sun" />
-          </span>
-          {h.status}
-        </p>
-
         <h1
           aria-label={c.name}
           className="vf mt-7 text-[clamp(3.5rem,min(12.5vw,19vh),12rem)] leading-[0.88] tracking-[-0.045em] [--d:75] [--w:780]"

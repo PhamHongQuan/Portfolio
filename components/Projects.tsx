@@ -12,10 +12,9 @@ export default function Projects() {
     <>
       {p.items.map((item, i) => (
         <Scene
-          key={item.name}
+          key={item.url} // stable across languages: a changing key remounts the scene
           id={i === 0 ? "work" : `work-${i + 1}`}
           label={item.name}
-          ghost={item.name}
           set={(["river", "meadow", "lone"] as const)[i % 3]}
           time="late"
           seed={5 + i}
@@ -33,7 +32,7 @@ export default function Projects() {
             <p className="mx-auto mt-6 max-w-[56ch] text-lg leading-relaxed text-muted">{item.description}</p>
             <p className="mt-6 flex flex-wrap justify-center gap-2">
               {item.stack.map((s) => (
-                <span key={s} className="tag bg-bg/50 backdrop-blur">
+                <span key={s} className="tag bg-bg/70">
                   {s}
                 </span>
               ))}
