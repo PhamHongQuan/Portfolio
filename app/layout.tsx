@@ -1,70 +1,69 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Be_Vietnam_Pro, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import SettingsMenu from "@/components/SettingsMenu";
-import ThemeTransition from "@/components/ThemeTransition";
+import { ThemeProvider, themeInitScript } from "@/contexts/ThemeContext";
+import Header from "@/components/Header";
+import { profile } from "@/lib/content";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "vietnamese"],
+const display = Bricolage_Grotesque({
+  variable: "--font-display",
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  axes: ["wdth", "opsz"],
   display: "swap",
-  preload: true,
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
+const body = Be_Vietnam_Pro({
+  variable: "--font-body",
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
-  preload: false,
 });
+
+const title = "Phạm Hồng Quân, Frontend Developer";
+const description =
+  "Frontend developer building fast, responsive interfaces with React, Next.js and Tailwind CSS, with enough backend to wire them to real APIs.";
 
 export const metadata: Metadata = {
-  title: "Pham Hong Quan - Java Backend Developer",
-  description: "Personal portfolio of Pham Hong Quan - passionate about building scalable backend systems with clean code and engineering excellence.",
-  keywords: ["Java", "Backend Developer", "Spring Boot", "REST API", "MySQL", "PostgreSQL"],
-  authors: [{ name: "Pham Hong Quan" }],
-  openGraph: {
-    title: "Pham Hong Quan - Java Backend Developer",
-    description: "Personal portfolio showcasing my journey in backend development",
-    type: "website",
-  },
+  metadataBase: new URL(profile.site),
+  title,
+  description,
+  keywords: ["Frontend Developer", "React", "Next.js", "TypeScript", "Tailwind CSS", "REST API", "Laravel"],
+  authors: [{ name: "Phạm Hồng Quân" }],
+  alternates: { canonical: "/" },
+  openGraph: { title, description, type: "profile", url: "/" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const personLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Phạm Hồng Quân",
+  jobTitle: "Frontend Developer",
+  url: profile.site,
+  email: `mailto:${profile.email}`,
+  address: { "@type": "PostalAddress", addressLocality: "Ho Chi Minh City", addressCountry: "VN" },
+  knowsAbout: ["React", "Next.js", "TypeScript", "Tailwind CSS", "REST APIs", "Laravel", "AI coding agents"],
+  sameAs: [profile.github, profile.linkedin].filter(Boolean),
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
       </head>
-      <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+      <body className={`${display.variable} ${body.variable} font-sans`}>
+        <a
+          href="#main"
+          className="sr-only z-[60] rounded-full bg-sun px-4 py-2 text-black focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+        >
+          Skip to content
+        </a>
         <ThemeProvider>
           <LanguageProvider>
-            {/* Theme transition animation */}
-            <ThemeTransition />
-            
-            {/* Top right controls */}
-            <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50 flex items-center gap-2 md:gap-4">
-              {/* Mobile: Settings Menu */}
-              <div className="md:hidden">
-                <SettingsMenu />
-              </div>
-              
-              {/* Desktop: Separate buttons */}
-              <div className="hidden md:flex items-center gap-4">
-                <ThemeSwitcher />
-                <LanguageSwitcher />
-              </div>
-            </div>
+            <Header />
             {children}
           </LanguageProvider>
         </ThemeProvider>
