@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { profile } from "@/lib/content";
 import { Scene } from "./Film";
@@ -9,12 +9,15 @@ export default function Contact() {
   const { c } = useLanguage();
   const k = c.contact;
   const [copied, setCopied] = useState(false);
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(profile.email);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
+      clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => setCopied(false), 1800);
     } catch {}
   };
 
@@ -47,7 +50,7 @@ export default function Contact() {
           </button>
         </div>
 
-        <dl className="mt-12 flex flex-wrap justify-center gap-x-16 gap-y-6 rounded-3xl border border-line bg-bg/50 px-8 py-6 backdrop-blur">
+        <dl className="mt-12 flex flex-wrap justify-center gap-x-16 gap-y-6 rounded-3xl border border-line bg-bg/75 px-8 py-6">
           <div>
             <dt className="text-sm text-muted">{k.labels.phone}</dt>
             <dd className="mt-1 text-lg">

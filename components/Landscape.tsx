@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, useId } from "react";
+import { CSSProperties, ReactNode, memo, useId } from "react";
 
 // Landscape sets for the film. Each scene is a different place on one journey, from a far
 // panorama in at night to a sunrise close up. Everything is drawn from seeded generators, so
@@ -11,6 +11,7 @@ const rng = (seed: number) => {
   return () => (s = (s * 9301 + 49297) % 233280) / 233280;
 };
 const f = (n: number) => n.toFixed(1);
+const rd = (n: number) => Math.round(n); // path coordinates: whole units are plenty in a 1000-wide box
 
 // Jagged mountain range in a 1000×300 box; `valley` < 1 keeps the middle lower.
 const range = (seed: number, n: number, lo: number, hi: number, valley = 0.5) => {
@@ -19,7 +20,7 @@ const range = (seed: number, n: number, lo: number, hi: number, valley = 0.5) =>
   for (let i = 0; i <= n; i++) {
     const x = (i / n) * 1000;
     const edge = valley + (1 - valley) * (Math.abs(x - 500) / 500);
-    d += ` L${f(x)} ${f(300 - (i % 2 ? hi * (0.7 + r() * 0.3) : lo * (0.6 + r() * 0.4)) * edge)}`;
+    d += ` L${rd(x)} ${rd(300 - (i % 2 ? hi * (0.7 + r() * 0.3) : lo * (0.6 + r() * 0.4)) * edge)}`;
   }
   return d + " L1000 300 Z";
 };
@@ -32,11 +33,11 @@ const rolling = (seed: number, lo: number, hi: number, valley = 0.5) => {
     const edge = valley + (1 - valley) * (Math.abs(x - 500) / 500);
     return [x, 300 - (lo + r() * (hi - lo)) * edge] as const;
   });
-  let d = `M0 300 L0 ${f(pts[0][1])}`;
+  let d = `M0 300 L0 ${rd(pts[0][1])}`;
   for (let i = 1; i < pts.length; i++) {
     const [px, py] = pts[i - 1];
     const [x, y] = pts[i];
-    d += ` C${f(px + 80)} ${f(py)} ${f(x - 80)} ${f(y)} ${f(x)} ${f(y)}`;
+    d += ` C${rd(px + 80)} ${rd(py)} ${rd(x - 80)} ${rd(y)} ${rd(x)} ${rd(y)}`;
   }
   const yAt = (x: number) => {
     const i = Math.min(5, Math.floor(x / (1000 / 6)));
@@ -53,10 +54,10 @@ const pine = (x: number, base: number, h: number) => {
   const tiers = 5;
   const top = base - h;
   const y = (t: number) => top + (h * 0.88 * t) / tiers;
-  let d = ` M${f(x)} ${f(top)}`;
-  for (let t = 1; t <= tiers; t++) d += ` L${f(x + (w * t) / tiers)} ${f(y(t))} L${f(x + (w * t * 0.5) / tiers)} ${f(y(t))}`;
-  d += ` L${f(x + w * 0.07)} ${f(base)} L${f(x - w * 0.07)} ${f(base)}`;
-  for (let t = tiers; t >= 1; t--) d += ` L${f(x - (w * t * 0.5) / tiers)} ${f(y(t))} L${f(x - (w * t) / tiers)} ${f(y(t))}`;
+  let d = ` M${rd(x)} ${rd(top)}`;
+  for (let t = 1; t <= tiers; t++) d += ` L${rd(x + (w * t) / tiers)} ${rd(y(t))} L${rd(x + (w * t * 0.5) / tiers)} ${rd(y(t))}`;
+  d += ` L${rd(x + w * 0.07)} ${rd(base)} L${rd(x - w * 0.07)} ${rd(base)}`;
+  for (let t = tiers; t >= 1; t--) d += ` L${rd(x - (w * t * 0.5) / tiers)} ${rd(y(t))} L${rd(x - (w * t) / tiers)} ${rd(y(t))}`;
   return d + " Z";
 };
 
@@ -89,7 +90,7 @@ const blades = (seed: number, count: number, lo: number, hi: number, bands: [num
     const x = a + r() * (b - a);
     const h = lo + r() * (hi - lo);
     const bend = (r() - 0.5) * 26;
-    d += ` M${f(x - 2.2)} 100 Q${f(x + bend * 0.3)} ${f(100 - h * 0.6)} ${f(x + bend)} ${f(100 - h)} Q${f(x + bend * 0.2 + 1)} ${f(100 - h * 0.5)} ${f(x + 2.2)} 100 Z`;
+    d += ` M${rd(x - 2.2)} 100 Q${rd(x + bend * 0.3)} ${rd(100 - h * 0.6)} ${rd(x + bend)} ${rd(100 - h)} Q${rd(x + bend * 0.2 + 1)} ${rd(100 - h * 0.5)} ${rd(x + 2.2)} 100 Z`;
   }
   return d;
 };
@@ -105,7 +106,7 @@ const broadleaf = (seed: number, x: number, base: number, h: number) => {
   });
   crown.push({ cx: x, cy: crownY - R * 0.2, r: R * 0.9 });
   const tw = h * 0.05;
-  const trunk = `M${f(x - tw)} ${f(base)} L${f(x - tw * 0.5)} ${f(crownY)} L${f(x + tw * 0.5)} ${f(crownY)} L${f(x + tw)} ${f(base)} Z`;
+  const trunk = `M${rd(x - tw)} ${rd(base)} L${rd(x - tw * 0.5)} ${rd(crownY)} L${rd(x + tw * 0.5)} ${rd(crownY)} L${rd(x + tw)} ${rd(base)} Z`;
   return { trunk, crown };
 };
 
@@ -125,7 +126,7 @@ const Tree = ({ t, style, fill = "var(--tree)", sway }: { t: ReturnType<typeof b
   <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMax meet" className={`land ${sway ? "sway" : ""}`} style={{ ...style, fill }}>
     <path d={t.trunk} />
     {t.crown.map((c, i) => (
-      <circle key={i} cx={f(c.cx)} cy={f(c.cy)} r={f(c.r)} />
+      <circle key={i} cx={rd(c.cx)} cy={rd(c.cy)} r={rd(c.r)} />
     ))}
   </svg>
 );
@@ -142,10 +143,10 @@ const Grove = ({ seed, side, height, count = 6, lo = 170, hi = 400 }: { seed: nu
 // Grass in three layers that each catch the wind on their own beat, so the meadow ripples.
 const Grass = ({ b: [seed, count, lo, hi, bands], height, extra }: { b: Parameters<typeof blades>; height: string; extra?: ReactNode }) => (
   <>
-    {[0, 1, 2].map((k) => (
-      <svg key={k} viewBox="0 0 1000 100" preserveAspectRatio="none" className={`meadow wind${k}`} style={{ height }}>
-        <path d={blades(seed + k * 13, Math.ceil(count / 3), lo * (1 - k * 0.1), hi * (1 - k * 0.06), bands)} />
-        {k === 2 && extra}
+    {[0, 1, 2].map((j) => (
+      <svg key={j} viewBox="0 0 1000 100" preserveAspectRatio="none" className={`meadow wind${j}`} style={{ height }}>
+        <path d={blades(seed + j * 13, Math.ceil((count * 0.7) / 3), lo * (1 - j * 0.1), hi * (1 - j * 0.06), bands)} />
+        {j === 2 && extra}
       </svg>
     ))}
   </>
@@ -171,7 +172,7 @@ const Drifters = ({ seed, count }: { seed: number; count: number }) => {
 const mix = (pct: number) => `color-mix(in oklab, var(--mtn-far) ${100 - pct}%, var(--tree))`;
 
 // Middle planes: the place itself.
-export function Mid({ set, seed }: { set: SetName; seed: number }) {
+export const Mid = memo(function Mid({ set, seed }: { set: SetName; seed: number }) {
   const id = useId().replace(/:/g, "");
   const water = (
     <linearGradient id={`${id}w`} x1="0" y1="0" x2="0" y2="1">
@@ -255,8 +256,8 @@ export function Mid({ set, seed }: { set: SetName; seed: number }) {
         const y = t * 380;
         const cx = 500 + Math.sin(t * 5 + phase) * 160 * t;
         const hw = 5 + t * t * 300;
-        left.push(`${f(cx - hw)} ${f(y)}`);
-        right.unshift(`${f(cx + hw)} ${f(y)}`);
+        left.push(`${rd(cx - hw)} ${rd(y)}`);
+        right.unshift(`${rd(cx + hw)} ${rd(y)}`);
       }
       return (
         <>
@@ -300,17 +301,17 @@ export function Mid({ set, seed }: { set: SetName; seed: number }) {
     case "valleys":
       return (
         <>
-          {[0, 1, 2, 3, 4].map((k) => {
-            const ridge = rolling(seed + k * 7, 120, 230, 0.55);
+          {[0, 1, 2, 3, 4].map((j) => {
+            const ridge = rolling(seed + j * 7, 120, 230, 0.55);
             return (
-              <div key={k}>
+              <div key={j}>
                 <Land
                   d={ridge.d}
-                  extra={k >= 2 ? pinesOn(ridge.yAt, seed + k, 30 + k * 6, 10 + k * 6, 20 + k * 10, 130 + k * 20) : undefined}
-                  fill={mix(k * 25)}
-                  style={{ bottom: `${30 - k * 8}%`, height: "30%" }}
+                  extra={j >= 2 ? pinesOn(ridge.yAt, seed + j, 30 + j * 6, 10 + j * 6, 20 + j * 10, 130 + j * 20) : undefined}
+                  fill={mix(j * 25)}
+                  style={{ bottom: `${30 - j * 8}%`, height: "30%" }}
                 />
-                <div className="mist" style={{ top: `${50 + k * 8}%`, height: "10%" }} />
+                <div className="mist" style={{ top: `${50 + j * 8}%`, height: "10%" }} />
               </div>
             );
           })}
@@ -327,16 +328,16 @@ export function Mid({ set, seed }: { set: SetName; seed: number }) {
       );
     }
   }
-}
+});
 
 // Foreground: what is right in front of the camera. It grows nearer as the journey goes on.
-export function Fore({ set, seed }: { set: SetName; seed: number }) {
+export const Fore = memo(function Fore({ set, seed }: { set: SetName; seed: number }) {
   const r = rng(seed + 51);
   const count = { panorama: 9, lake: 10, forest: 14, deep: 24, river: 10, meadow: 16, lone: 10, valleys: 11, sunrise: 6 }[set];
   const flies = Array.from({ length: count }, (_, i) => (
     <span
       key={i}
-      className="firefly"
+      className={`firefly ${i >= 6 ? "extra" : ""}`}
       style={{ left: `${f(5 + r() * 90)}%`, top: `${f(40 + r() * 50)}%`, animationDelay: `${f(r() * -12)}s` }}
     >
       <i style={{ animationDelay: `${f(r() * -3)}s`, animationDuration: `${f(1.8 + r() * 2.4)}s` }} />
@@ -411,4 +412,4 @@ export function Fore({ set, seed }: { set: SetName; seed: number }) {
       {flies}
     </>
   );
-}
+});

@@ -76,6 +76,7 @@ export default function Header() {
             </svg>
           </button>
 
+
           <a href="#contact" className="btn btn-primary btn-sm hidden sm:inline-flex">
             {c.ui.hire}
           </a>
@@ -99,7 +100,7 @@ export default function Header() {
         <nav
           id="mobile-nav"
           aria-label={c.ui.nav}
-          className="mx-auto mt-2 max-w-5xl rounded-3xl border border-line bg-bg/90 p-3 backdrop-blur-xl lg:hidden"
+          className="mx-auto mt-2 max-w-5xl rounded-3xl border border-line bg-bg/95 p-3 lg:hidden"
         >
           <ul>
             {links.map(([href, label]) => (

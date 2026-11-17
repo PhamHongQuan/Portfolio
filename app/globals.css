@@ -12,7 +12,6 @@
   --sun: #f2c94c;
   --sun-ink: #7d6200; /* yellow that stays readable on the light background */
   --glow: rgb(14 138 90 / 0.16);
-  --ghost: rgb(11 31 24 / 0.07);
   /* Landscape by day: clear mint sky, soft clouds, sage mountains, green hills and meadow. */
   --sky-top: #b9e2d2;
   --sky-bottom: #eef8f2;
@@ -51,7 +50,6 @@
   --sun: #f3d37a;
   --sun-ink: #f3d37a;
   --glow: rgb(61 220 151 / 0.22);
-  --ghost: rgb(255 255 255 / 0.05);
   /* Landscape by night: starry sky, green aurora, dark mountains and pines, fireflies over the grass. */
   --sky-top: #010508;
   --sky-bottom: #0b2c25;
@@ -145,6 +143,10 @@ body {
   inset: 0;
   min-height: 0;
 }
+/* Safety net: a scene the engine hasn't marked stays hidden instead of sitting over the page. */
+.cinema .scene:not([data-live], [data-warm]) {
+  visibility: hidden;
+}
 /* Scenes off screen keep their ambient animations paused. */
 .cinema .scene:not([data-live]) *,
 .cinema .scene:not([data-live]) *::before {
@@ -158,9 +160,34 @@ body {
 }
 /* Film.tsx sets each plane's transform and opacity. Only the (at most two) scenes on screen get
    their own GPU layers; promoting all ten would cost hundreds of MB of video memory on Retina. */
-.cinema .scene[data-live] > .pl,
-.cinema .scene[data-live] > .pl-main {
+.cinema .scene:is([data-live], [data-warm]) > .pl,
+.cinema .scene:is([data-live], [data-warm]) > .pl-main {
   will-change: transform, opacity;
+}
+
+/* Light version, for weak devices or a measured low frame rate (Film.tsx sets data-quality).
+   Same scenes and camera; it drops the extras that cost the most to draw. */
+[data-quality="low"] :is(.drift, .meteor, .shimmer, .meadow.wind0, .meadow.wind1, .firefly.extra) {
+  display: none;
+}
+[data-quality="low"] .aurora i::before {
+  display: none;
+}
+[data-quality="low"] :is(.stars, .mist, .rays i, .sway, .marquee-track) {
+  animation: none !important;
+}
+[data-quality="low"] .aurora i {
+  animation: glow 4s ease-in-out infinite alternate !important; /* brightness only, no reshaping */
+}
+[data-quality="low"] .firefly i {
+  box-shadow: 0 0 8px 2px color-mix(in oklab, var(--firefly) 70%, transparent);
+}
+[data-quality="low"] .pl-main {
+  text-shadow: none;
+}
+[data-quality="low"] header > div {
+  backdrop-filter: none;
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
 }
 .pl-back {
   transform-origin: 50% 60%;
@@ -190,62 +217,116 @@ body {
   height: 100%;
   min-height: 0;
 }
-/* Fast-forward: speed lines stream out of the vanishing point; a pill names where you're headed. */
+/* Fast-forward, as a film reel: the whole picture shrinks into a frame in a dark projection room,
+   film strips race past on either side, each scene is pulled into the gate (Film.tsx `kick`), and
+   a caption with the chapter track sits under the frame. Then the frame grows back to full screen. */
+.cinema .screen {
+  transition:
+    scale 0.4s cubic-bezier(0.3, 0.7, 0.2, 1),
+    border-radius 0.4s,
+    box-shadow 0.4s;
+}
+.skipping .screen {
+  scale: 0.76;
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 35%, transparent),
+    0 40px 120px -20px rgb(0 0 0 / 0.8);
+}
+.skipping body {
+  background: #020504; /* the projection room */
+}
 .skip-fx {
   position: fixed;
   inset: 0;
   z-index: 40;
-  overflow: hidden;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s;
-  background: radial-gradient(ellipse at 50% 55%, transparent 20%, color-mix(in oklab, var(--bg) 75%, transparent) 78%);
 }
-.skip-fx::before {
-  content: "";
+.reel {
   position: absolute;
-  inset: -40%;
-  background: repeating-conic-gradient(
-    from 0deg at 50% 50%,
-    transparent 0deg 2.6deg,
-    color-mix(in oklab, var(--accent) 45%, transparent) 2.6deg 3deg,
-    transparent 3deg 6.5deg
-  );
-  mask-image: radial-gradient(circle at 50% 50%, transparent 10%, #000 48%);
-  animation: warp 0.3s linear infinite paused;
+  top: 0;
+  bottom: 0;
+  width: 4.5vw;
+  overflow: hidden;
+  background: #0a0f0d;
+  opacity: 0;
+  transition:
+    opacity 0.3s,
+    translate 0.4s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
-.skipping .skip-fx {
+.reel.left {
+  left: calc(12% - 4.5vw - 10px);
+  translate: -40px 0;
+}
+.reel.right {
+  right: calc(12% - 4.5vw - 10px);
+  translate: 40px 0;
+}
+/* Sprocket holes: a tall strip that slides a whole number of holes per loop, so it never jumps. */
+.reel i {
+  position: absolute;
+  inset: -48px 0 0 0;
+  background: repeating-linear-gradient(to bottom, color-mix(in oklab, var(--muted) 30%, transparent) 0 22px, transparent 22px 48px)
+    center / 46% 100% no-repeat;
+  animation: reel 0.16s linear infinite paused;
+}
+@keyframes reel {
+  to {
+    transform: translateY(48px);
+  }
+}
+.skipping .reel {
   opacity: 1;
+  translate: 0 0;
 }
-.skipping .skip-fx::before {
+.skipping .reel i {
   animation-play-state: running;
 }
-@keyframes warp {
-  from {
-    transform: scale(1) rotate(0deg);
-  }
-  to {
-    transform: scale(1.3) rotate(3deg);
-  }
+[data-quality="low"] .reel i {
+  animation: none;
 }
-.skip-label {
+.skip-bar {
   position: absolute;
-  left: 50%;
-  bottom: 14vh;
-  display: inline-flex;
+  inset-inline: 0;
+  bottom: 3.5vh;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--surface) 90%, transparent);
-  color: var(--accent);
-  font-weight: 600;
-  transform: translate(-50%, 8px);
-  transition: transform 0.25s;
+  justify-content: center;
+  gap: 0.6rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  opacity: 0;
+  translate: 0 12px;
+  transition:
+    opacity 0.3s,
+    translate 0.3s;
 }
-.skipping .skip-label {
-  transform: translate(-50%, 0);
+.skipping .skip-bar {
+  opacity: 1;
+  translate: 0 0;
+}
+.skip-name {
+  margin-right: 0.75rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+.skip-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.skip-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--muted) 45%, transparent);
+  transition:
+    width 0.12s,
+    background-color 0.12s;
+}
+.skip-dots i[data-on] {
+  width: 20px;
+  background: var(--accent);
 }
 
 .fit {
@@ -256,7 +337,7 @@ body {
    mist, pine-topped hills, then foreground pines, meadow grass and fireflies right at the camera. --- */
 .sky {
   position: absolute;
-  inset: 0;
+  inset: -3%;
   background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 62%, var(--ground) 62.5%);
 }
 .scene[data-time="dawn"] .sky {
@@ -449,10 +530,11 @@ body {
   mask-image: linear-gradient(to bottom, #000 50%, transparent 50.5%);
 }
 
+/* Planes bleed a little past the screen edges so parallax never shows a gap. */
 .land {
   position: absolute;
-  inset-inline: 0;
-  width: 100%;
+  inset-inline: -3%;
+  width: 106%;
 }
 .mist {
   position: absolute;
@@ -470,7 +552,7 @@ body {
 /* Lake: still water below the horizon, mirroring the mountains and the aurora. */
 .lake {
   position: absolute;
-  inset: 63% 0 0 0;
+  inset: 63% -3% -3% -3%;
   overflow: hidden;
   background: linear-gradient(to bottom, var(--water-top), var(--water-bottom));
 }
@@ -743,22 +825,6 @@ body {
   }
 }
 
-/* Huge faint scene name sitting on the horizon, far behind the content. */
-.ghost {
-  position: absolute;
-  left: 50%;
-  top: 63%;
-  white-space: nowrap;
-  font-size: clamp(6rem, 22vw, 20rem);
-  line-height: 0.8;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--ghost);
-  font-family: var(--font-display), sans-serif;
-  font-variation-settings: "wght" 800, "wdth" 75;
-  transform: translate(-50%, -100%);
-  user-select: none;
-}
-
 /* ---------- Page-load headline: letters rise in once ---------- */
 .rise > span {
   display: inline-block;
@@ -873,8 +939,7 @@ body {
   }
   .btn-outline {
     border: 1px solid var(--line);
-    background: color-mix(in oklab, var(--surface) 50%, transparent);
-    backdrop-filter: blur(8px);
+    background: color-mix(in oklab, var(--surface) 75%, transparent);
   }
   .btn-outline:hover {
     border-color: var(--ink);
