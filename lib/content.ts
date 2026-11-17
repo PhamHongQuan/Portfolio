@@ -18,10 +18,22 @@ const en = {
     menu: "Menu",
     close: "Close",
     nav: "Main",
-    hire: "Hire me",
     backToTop: "Back to top",
     copy: "Copy email",
     copied: "Copied",
+    soundOn: "Play ambient sound",
+    soundOff: "Mute ambient sound",
+  },
+  weather: {
+    fallbackCity: "Ho Chi Minh City",
+    kinds: { clear: "Clear", cloudy: "Cloudy", fog: "Foggy", drizzle: "Drizzle", rain: "Rain", storm: "Thunderstorm", snow: "Snow" },
+  },
+  cv: {
+    profile: "Profile",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    education: "Education",
   },
   nav: {
     about: "About",
@@ -104,6 +116,11 @@ const en = {
     title: "Selected work",
     intro: "Production products I've built or contributed to.",
     visit: "Visit site",
+    caseStudy: "Case study",
+    back: "Back to work",
+    prev: "Previous project",
+    next: "Next project",
+    labels: { role: "Role", year: "Year", context: "Context", did: "What I did", outcome: "Outcome", stack: "Stack" },
     items: [
       {
         name: "Rada360",
@@ -113,6 +130,17 @@ const en = {
           "Turned Figma designs into responsive booking pages and wired them to the APIs for services, time slots and bookings.",
         stack: ["Tailwind CSS", "JavaScript", "REST API"],
         url: "https://rada360.com",
+        study: {
+          role: "Frontend and API developer",
+          context: "A booking system: customers pick a service, choose a free time slot and book it.",
+          did: [
+            "Turned the Figma designs into responsive booking pages with Tailwind CSS and JavaScript",
+            "Wired the pages to the APIs for services, time slots and bookings",
+            "Designed and built the REST API behind the booking system in Laravel",
+            "Documented and tested the API with Swagger and Postman",
+          ],
+          outcome: "In production at rada360.com, used by real customers.",
+        },
       },
       {
         name: "AI360",
@@ -122,6 +150,18 @@ const en = {
           "Fullstack work on a chatbot platform for Facebook, Zalo, Telegram and websites: the training system, the REST API, webhook processing and a referral program.",
         stack: ["Laravel", "REST API", "MySQL", "JavaScript"],
         url: "https://ai.rada360.com",
+        study: {
+          role: "Fullstack developer",
+          context: "A SaaS platform for AI chatbots that answer customers on Facebook, Zalo, Telegram and websites.",
+          did: [
+            "Built the chatbot training system and the REST API behind the platform",
+            "Processed the incoming webhooks from each messaging platform",
+            "Moved webhook handling and outgoing messages onto queues, cutting response times",
+            "Introduced a service layer to keep business logic out of controllers, easier to maintain and test",
+            "Built the referral program",
+          ],
+          outcome: "Live at ai.rada360.com.",
+        },
       },
       {
         name: "This portfolio",
@@ -130,6 +170,19 @@ const en = {
         description: "Bilingual site with light and dark themes, scroll-driven animation and pointer-lit cards, built with Next.js and Tailwind CSS.",
         stack: ["Next.js", "TypeScript", "Tailwind CSS"],
         url: "https://hquanpham.id.vn",
+        study: {
+          role: "Design and development",
+          context: "A personal site that plays like a short film instead of a page of sections, and still works as a fast, readable portfolio.",
+          did: [
+            "A scroll-driven film engine: one pinned screen, scenes in four parallax planes and a multiplane camera move between them",
+            "Landscapes drawn from seeded SVG generators, rendered lazily in idle time",
+            "Adaptive quality: weak devices or a measured low frame rate get a lighter version",
+            "A sky that follows the visitor's clock and real local weather, with festivals through the year",
+            "Ambient sound synthesised with the Web Audio API, following the scene and the time of day",
+            "Bilingual content, light and dark themes, keyboard navigation, deep links and a print stylesheet that turns the page into a résumé",
+          ],
+          outcome: "Press ? anywhere on the page to see its live performance numbers.",
+        },
       },
     ],
   },
@@ -186,6 +239,7 @@ const en = {
   footer: {
     tagline: "Frontend developer building fast, responsive interfaces.",
     rights: "All rights reserved.",
+    frogCredit: "Frog recording",
   },
 };
 
@@ -200,10 +254,22 @@ const vi: Content = {
     menu: "Menu",
     close: "Đóng",
     nav: "Điều hướng",
-    hire: "Liên hệ",
     backToTop: "Lên đầu trang",
     copy: "Sao chép email",
     copied: "Đã sao chép",
+    soundOn: "Bật âm thanh nền",
+    soundOff: "Tắt âm thanh nền",
+  },
+  weather: {
+    fallbackCity: "TP. Hồ Chí Minh",
+    kinds: { clear: "Trời quang", cloudy: "Nhiều mây", fog: "Sương mù", drizzle: "Mưa phùn", rain: "Mưa", storm: "Giông", snow: "Tuyết" },
+  },
+  cv: {
+    profile: "Giới thiệu",
+    experience: "Kinh nghiệm",
+    projects: "Dự án",
+    skills: "Kỹ năng",
+    education: "Học vấn",
   },
   nav: {
     about: "Giới thiệu",
@@ -286,6 +352,11 @@ const vi: Content = {
     title: "Dự án tiêu biểu",
     intro: "Những sản phẩm production tôi đã xây dựng hoặc tham gia.",
     visit: "Xem website",
+    caseStudy: "Chi tiết dự án",
+    back: "Quay lại dự án",
+    prev: "Dự án trước",
+    next: "Dự án tiếp theo",
+    labels: { role: "Vai trò", year: "Năm", context: "Bối cảnh", did: "Tôi đã làm", outcome: "Kết quả", stack: "Công nghệ" },
     items: [
       {
         name: "Rada360",
@@ -295,6 +366,17 @@ const vi: Content = {
           "Chuyển thiết kế Figma thành các trang đặt lịch responsive và tích hợp API cho dịch vụ, khung giờ và đặt lịch.",
         stack: ["Tailwind CSS", "JavaScript", "REST API"],
         url: "https://rada360.com",
+        study: {
+          role: "Frontend và API",
+          context: "Hệ thống đặt lịch: khách chọn dịch vụ, chọn khung giờ còn trống rồi đặt lịch.",
+          did: [
+            "Chuyển thiết kế Figma thành các trang đặt lịch responsive với Tailwind CSS và JavaScript",
+            "Kết nối các trang với API dịch vụ, khung giờ và đặt lịch",
+            "Thiết kế và xây dựng REST API cho hệ thống đặt lịch bằng Laravel",
+            "Tài liệu hoá và kiểm thử API bằng Swagger và Postman",
+          ],
+          outcome: "Đang chạy production tại rada360.com, có khách hàng thật sử dụng.",
+        },
       },
       {
         name: "AI360",
@@ -304,6 +386,18 @@ const vi: Content = {
           "Làm fullstack cho nền tảng chatbot trên Facebook, Zalo, Telegram và website: hệ thống training, RESTful API, xử lý webhook và chương trình referral.",
         stack: ["Laravel", "REST API", "MySQL", "JavaScript"],
         url: "https://ai.rada360.com",
+        study: {
+          role: "Fullstack",
+          context: "Nền tảng SaaS chatbot AI trả lời khách hàng trên Facebook, Zalo, Telegram và website.",
+          did: [
+            "Xây dựng hệ thống training chatbot và REST API của nền tảng",
+            "Xử lý webhook gửi đến từ từng nền tảng nhắn tin",
+            "Đưa xử lý webhook và gửi tin nhắn sang queue, giảm thời gian phản hồi",
+            "Xây dựng service layer tách business logic khỏi controller, dễ bảo trì và kiểm thử hơn",
+            "Xây dựng chương trình referral",
+          ],
+          outcome: "Đang chạy tại ai.rada360.com.",
+        },
       },
       {
         name: "Portfolio này",
@@ -312,6 +406,19 @@ const vi: Content = {
         description: "Website song ngữ với giao diện sáng và tối, animation theo thao tác cuộn và card phát sáng theo con trỏ, xây dựng bằng Next.js và Tailwind CSS.",
         stack: ["Next.js", "TypeScript", "Tailwind CSS"],
         url: "https://hquanpham.id.vn",
+        study: {
+          role: "Thiết kế và phát triển",
+          context: "Website cá nhân xem như một đoạn phim ngắn thay vì một trang chia mục, mà vẫn nhanh và dễ đọc như một portfolio.",
+          did: [
+            "Engine \"phim\" theo thao tác cuộn: một màn hình ghim, các cảnh gồm bốn lớp parallax và camera di chuyển xuyên qua giữa chúng",
+            "Phong cảnh vẽ bằng SVG sinh theo seed, chỉ vẽ khi trình duyệt rảnh",
+            "Tự điều chỉnh chất lượng: máy yếu hoặc FPS đo được thấp sẽ dùng bản nhẹ hơn",
+            "Bầu trời theo giờ và thời tiết thật nơi người xem, có lễ hội theo mùa trong năm",
+            "Âm thanh nền tạo bằng Web Audio API, đổi theo cảnh và thời điểm trong ngày",
+            "Song ngữ, giao diện sáng và tối, điều hướng bằng bàn phím, deep link và bản in biến trang thành CV",
+          ],
+          outcome: "Bấm ? ở bất kỳ đâu trên trang để xem số liệu hiệu năng trực tiếp.",
+        },
       },
     ],
   },
@@ -368,6 +475,7 @@ const vi: Content = {
   footer: {
     tagline: "Lập trình viên frontend xây giao diện nhanh và responsive.",
     rights: "Bảo lưu mọi quyền.",
+    frogCredit: "Tiếng ếch",
   },
 };
 

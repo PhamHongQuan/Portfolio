@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import Logo from "./Logo";
+import { SoundToggle } from "./Ambience";
 
 export const navLinks = (c: ReturnType<typeof useLanguage>["c"]) => [
   ["#about", c.nav.about],
@@ -58,6 +59,8 @@ export default function Header() {
             ))}
           </div>
 
+          <SoundToggle />
+
           <button
             type="button"
             onClick={toggleTheme}
@@ -75,11 +78,6 @@ export default function Header() {
               )}
             </svg>
           </button>
-
-
-          <a href="#contact" className="btn btn-primary btn-sm hidden sm:inline-flex">
-            {c.ui.hire}
-          </a>
 
           <button
             type="button"
@@ -111,9 +109,6 @@ export default function Header() {
               </li>
             ))}
           </ul>
-          <a href="#contact" onClick={() => setOpen(false)} className="btn btn-primary mt-2 w-full sm:hidden">
-            {c.ui.hire}
-          </a>
         </nav>
       )}
     </header>
