@@ -42,7 +42,8 @@ type Nav = Navigator & { deviceMemory?: number; connection?: { saveData?: boolea
  * Pins one screen and plays the page as a sequence of scenes. Scrolling pushes the camera through the
  * current scene and out of it, while the next one comes in from the distance (multiplane, like a film).
  * It writes transform and opacity straight onto each scene's planes; ambient motion lives in globals.css.
- * Without JS, or with reduced motion, the scenes simply stack as normal full-height sections.
+ * Without JS, the scenes simply stack as normal full-height sections. It plays the same everywhere,
+ * whatever the OS reduced-motion setting says (Windows turns it on when "Animation effects" is off).
  */
 export default function Film({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -112,7 +113,6 @@ export default function Film({ children }: { children: ReactNode }) {
   // property so it composes with the camera's `transform: scale()`; eased, and idle when still.
   useEffect(() => {
     const root = document.documentElement;
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const depth: [string, number][] = [
       [".pl-back", 0.15],
       [".pl-mid", 0.45],
@@ -185,7 +185,6 @@ export default function Film({ children }: { children: ReactNode }) {
     };
     idle = ric(drawNext, { timeout: 1500 });
 
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return () => cic(idle);
     const root = document.documentElement;
     let n = scenes.length;
     root.classList.add("cinema");
@@ -407,9 +406,13 @@ export default function Film({ children }: { children: ReactNode }) {
       goTo(to < 0 ? 0 : to);
     };
 
+    // Opened on a deep link: start right on that scene. Read the hash before the first measure(),
+    // whose first frame syncs the address to the scene on screen (the top) and would clear it.
+    // The <head> script parks the hash in data-start (lib/headScript.ts). Left in place: a remount
+    // (React's development double-run, for one) must find it again.
+    const startHash = location.hash || root.dataset.start || "";
+    const start = scenes.findIndex((s) => `#${s.id}` === startHash);
     measure();
-    // Opened on a deep link: start right on that scene.
-    const start = scenes.findIndex((s) => `#${s.id}` === location.hash);
     if (start > 0) cut(start * SEG);
     const ro = new ResizeObserver(measure);
     ro.observe(document.body);
@@ -479,6 +482,7 @@ export function Scene({
   time,
   seed,
   moon,
+  clock,
   children,
   after,
 }: {
@@ -488,13 +492,15 @@ export function Scene({
   time: Time;
   seed: number;
   moon?: boolean;
+  /** Sky follows the visitor's real clock (html[data-clock], lib/clock.ts) instead of `time`. */
+  clock?: boolean;
   children: ReactNode;
   after?: ReactNode;
 }) {
   const ready = useDrawn(id);
 
   return (
-    <section id={id} aria-label={label} data-time={time} className="scene">
+    <section id={id} aria-label={label} data-time={time} data-clock={clock ? "" : undefined} className="scene">
       <div aria-hidden className="pl pl-back">
         <div className="sky" />
         {ready && (
@@ -516,7 +522,7 @@ export function Scene({
             <span className="meteor" style={{ left: `${30 + ((seed * 29) % 40)}%`, top: "4%", animationDelay: `${-((seed * 2.9 + 3.5) % 7)}s` }} />
           </>
         )}
-        {time === "dawn" && <div className="sunrise" />}
+        {time === "dawn" ? <div className="sunrise" /> : clock && <div className="sunrise clock-sun" />}
       </div>
 
       <div aria-hidden className="pl pl-mid">

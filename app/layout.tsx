@@ -1,22 +1,23 @@
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro, Bricolage_Grotesque } from "next/font/google";
+import { Manrope, Unbounded } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { ThemeProvider, themeInitScript } from "@/contexts/ThemeContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { headScript } from "@/lib/headScript";
 import Header from "@/components/Header";
+import Opening from "@/components/Opening";
 import { profile } from "@/lib/content";
 
-const display = Bricolage_Grotesque({
+// Unbounded for display type (bold, wide, characterful), Manrope for text.
+const display = Unbounded({
   variable: "--font-display",
   subsets: ["latin", "latin-ext", "vietnamese"],
-  axes: ["wdth", "opsz"],
   display: "swap",
 });
 
-const body = Be_Vietnam_Pro({
+const body = Manrope({
   variable: "--font-body",
   subsets: ["latin", "latin-ext", "vietnamese"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -51,10 +52,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: headScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
       </head>
       <body className={`${display.variable} ${body.variable} font-sans`}>
+        <Opening />
         <a
           href="#main"
           className="sr-only z-[60] rounded-full bg-sun px-4 py-2 text-black focus:not-sr-only focus:fixed focus:top-4 focus:left-4"

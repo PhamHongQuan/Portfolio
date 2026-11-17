@@ -24,11 +24,11 @@ export default function Hero() {
   );
 
   return (
-    <Scene id="top" label={c.name} set="panorama" time="night" seed={1} moon after={marquee}>
+    <Scene id="top" label={c.name} set="panorama" time="night" seed={1} moon clock after={marquee}>
       <div className="flex -translate-y-[6vh] flex-col items-center text-center">
         <h1
           aria-label={c.name}
-          className="vf mt-7 text-[clamp(3.5rem,min(12.5vw,19vh),12rem)] leading-[0.88] tracking-[-0.045em] [--d:75] [--w:780]"
+          className="vf mt-7 text-[clamp(2.25rem,min(8.6vw,14vh),9rem)] leading-[0.95] tracking-[-0.045em] [--d:75] [--w:780]"
         >
           {c.name.split(" ").map((word, wi) => (
             <span key={wi} aria-hidden>
