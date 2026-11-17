@@ -1,92 +1,49 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Section from "./Section";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-function StatCard({ stat, index }: { stat: string; index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.9 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
-      className="text-center p-8 bg-zinc-900/80 backdrop-blur-sm rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-colors"
-    >
-      <div className="text-4xl font-bold mb-2 text-white">
-        {stat.split(" ")[0]}
-      </div>
-      <div className="text-sm text-zinc-500">
-        {stat.split(" ").slice(1).join(" ")}
-      </div>
-    </motion.div>
-  );
-}
+import { Scene } from "./Film";
+import SceneTitle from "./SceneTitle";
 
 export default function About() {
-  const { t } = useLanguage();
-  
-  const highlights = [
-    { text: t("I'm a " as any), highlight: t("Fullstack developer" as any), rest: t(" with experience building web systems using Laravel and ReactJS." as any) },
-    { text: t("I have experience " as any), highlight: t("developing APIs, handling backend logic, and implementing user interfaces." as any), rest: t(" I care about code structure, performance, and system scalability." as any) },
-    { text: t("My goal is to " as any), highlight: t("build stable, maintainable products" as any), rest: t(" that meet real-world needs." as any) },
-  ];
+  const { c } = useLanguage();
+  const a = c.about;
 
   return (
-    <Section id="about" className="bg-zinc-950">
-      <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
-            {t("Who I Am" as any)}
-          </h2>
-        </motion.div>
+    <>
+      <Scene id="about" label={a.title} ghost={a.title} set="lake" time="night" seed={2} moon>
+        <SceneTitle title={a.title} />
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="spot p-7 md:col-span-2 md:p-10">
+            <p className="vf text-[clamp(1.5rem,2.8vw,2.25rem)] leading-[1.15] [--w:560]">{a.lead}</p>
+            <div className="mt-6 max-w-[62ch] space-y-4 leading-relaxed text-muted md:text-lg">
+              {a.body.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-4 max-md:grid-cols-2">
+            {a.stats.map((s, i) => (
+              <div key={s.label} className={`spot flex flex-col justify-between gap-6 p-6 ${i === 0 ? "border-accent! bg-accent! text-on-accent" : ""}`}>
+                <p className="vf text-[clamp(3rem,6vw,4.5rem)] leading-none [--d:80] [--w:760]">{s.value}</p>
+                <p className={i === 0 ? "text-on-accent/75" : "text-muted"}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Scene>
 
-        <motion.div
-          className="space-y-6 text-base sm:text-xl leading-relaxed mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          {highlights.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15, duration: 0.6 }}
-              className="p-6 rounded-2xl bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 hover:border-zinc-700 transition-colors"
-            >
-              <p className="text-zinc-300">
-                {item.text}
-                <span className="font-semibold text-white">
-                  {item.highlight}
-                </span>
-                {item.rest}
-              </p>
-            </motion.div>
+      <Scene id="principles" label={a.principlesTitle} ghost={a.principlesTitle} set="forest" time="night" seed={3}>
+        <SceneTitle title={a.principlesTitle} center />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {a.principles.map((p) => (
+            <div key={p.title} className="spot p-6 md:p-7">
+              <span className="block h-1 w-10 rounded-full bg-sun" aria-hidden />
+              <h3 className="vf mt-5 text-xl [--w:640] md:text-2xl">{p.title}</h3>
+              <p className="mt-3 leading-relaxed text-muted">{p.text}</p>
+            </div>
           ))}
-        </motion.div>
-
-        <motion.div
-          className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          {[t("1+ Years" as any), t("GPA 3.25/4" as any), t("TOEIC 590" as any)].map((stat, index) => (
-            <StatCard key={stat} stat={stat} index={index} />
-          ))}
-        </motion.div>
-      </div>
-    </Section>
+        </div>
+      </Scene>
+    </>
   );
 }

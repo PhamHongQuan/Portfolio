@@ -1,19 +1,28 @@
 import Hero from "@/components/Hero";
 import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Experience from "@/components/Experience";
+import Stack from "@/components/Stack";
 import Projects from "@/components/Projects";
+import Experience from "@/components/Experience";
 import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
+import { Spotlight } from "@/components/Effects";
+import Film from "@/components/Film";
 
 export default function Home() {
   return (
-    <main className="w-full relative">
-      <Hero />
-      <About />
-      <Skills />
-      <Experience />
-      <Projects />
-      <Contact />
-    </main>
+    <>
+      <main id="main">
+        <Film>
+          <Hero />
+          <About />
+          <Stack />
+          <Projects />
+          <Experience />
+          <Contact />
+        </Film>
+      </main>
+      <Footer />
+      <Spotlight />
+    </>
   );
 }

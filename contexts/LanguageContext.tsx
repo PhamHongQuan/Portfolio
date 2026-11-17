@@ -1,54 +1,47 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { translations, Language, TranslationKey } from "@/lib/translations";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { content, Content, Language } from "@/lib/content";
 
-interface LanguageContextType {
+type LanguageContextType = {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: TranslationKey) => string;
-}
+  c: Content;
+};
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
 
-  // Load saved language from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem("language") as Language;
-      if (saved && (saved === "en" || saved === "vi")) {
-        setLanguageState(saved);
-      }
-    }
+    try {
+      const saved = localStorage.getItem("language");
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage is client-only
+      if (saved === "en" || saved === "vi") setLanguageState(saved);
+    } catch {}
   }, []);
 
-  // Save language to localStorage
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    if (typeof window !== 'undefined') {
+    try {
       localStorage.setItem("language", lang);
-    }
-  };
-
-  // Translation function
-  const t = (key: TranslationKey): string => {
-    const translationObj = translations[language] as Record<string, string>;
-    return translationObj[key] || key;
+    } catch {}
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, c: content[language] }}>
       {children}
     </LanguageContext.Provider>
   );
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within LanguageProvider");
-  }
-  return context;
+  const ctx = useContext(LanguageContext);
+  if (!ctx) throw new Error("useLanguage must be used within LanguageProvider");
+  return ctx;
 }
