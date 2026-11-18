@@ -7,6 +7,7 @@ import { headScript } from "@/lib/headScript";
 import Header from "@/components/Header";
 import Opening from "@/components/Opening";
 import { profile } from "@/lib/content";
+import { siteDescription as description, siteTitle as title } from "@/lib/share";
 
 // Unbounded for display type (bold, wide, characterful), Manrope for text.
 const display = Unbounded({
@@ -20,10 +21,6 @@ const body = Manrope({
   subsets: ["latin", "latin-ext", "vietnamese"],
   display: "swap",
 });
-
-const title = "Phạm Hồng Quân, Frontend Developer";
-const description =
-  "Frontend developer building fast, responsive interfaces with React, Next.js and Tailwind CSS, with enough backend to wire them to real APIs.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(profile.site),

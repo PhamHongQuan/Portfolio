@@ -138,6 +138,24 @@ body {
   height: 100svh;
   overflow: clip;
 }
+/* Rest on a scene, never half way between two (snap points written by Film.tsx). */
+html.cinema {
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 0; /* the header floats over the pinned screen; it would offset every snap */
+}
+.cinema .film {
+  position: relative;
+}
+.snaps i {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  scroll-snap-align: start;
+}
+.cinema footer {
+  scroll-snap-align: end;
+}
 .cinema .scene {
   position: absolute;
   inset: 0;
@@ -1087,24 +1105,6 @@ body {
   25% {
     filter: brightness(1.35);
     scale: 1.08;
-  }
-}
-
-/* ---------- Ambient sound toggle (Ambience.tsx): sound waves pulse while it plays ---------- */
-.sound-wave {
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-[aria-pressed="true"] .sound-wave {
-  opacity: 1;
-  animation: sound-wave 1.4s ease-in-out infinite;
-}
-[aria-pressed="true"] .sound-wave + .sound-wave {
-  animation-delay: 0.2s;
-}
-@keyframes sound-wave {
-  50% {
-    opacity: 0.35;
   }
 }
 

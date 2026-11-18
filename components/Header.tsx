@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import Logo from "./Logo";
-import { SoundToggle } from "./Ambience";
 
 export const navLinks = (c: ReturnType<typeof useLanguage>["c"]) => [
   ["#about", c.nav.about],
@@ -13,6 +12,22 @@ export const navLinks = (c: ReturnType<typeof useLanguage>["c"]) => [
   ["#experience", c.nav.experience],
   ["#contact", c.nav.contact],
 ];
+
+const onScene = (l: () => void) => {
+  addEventListener("scene", l);
+  return () => removeEventListener("scene", l);
+};
+
+// The menu entry for the current scene: sub-scenes (principles, work-2, education) light up the
+// entry before them.
+const useActive = (hrefs: string[]) => {
+  const scene = useSyncExternalStore(onScene, () => document.documentElement.dataset.scene ?? "top", () => "top");
+  if (typeof document === "undefined") return null;
+  for (let el = document.getElementById(scene); el; el = el.previousElementSibling as HTMLElement | null) {
+    if (hrefs.includes(`#${el.id}`)) return `#${el.id}`;
+  }
+  return null;
+};
 
 // Floating dark glass pill, the same in both themes.
 export default function Header() {
@@ -27,6 +42,7 @@ export default function Header() {
   }, []);
 
   const links = navLinks(c);
+  const active = useActive(links.map(([href]) => href));
 
   return (
     <header className="fixed inset-x-0 top-3 z-50 px-3">
@@ -37,7 +53,12 @@ export default function Header() {
 
         <nav aria-label={c.ui.nav} className="hidden items-center gap-1 text-[0.9375rem] text-muted lg:flex">
           {links.map(([href, label]) => (
-            <a key={href} href={href} className="rounded-full px-3.5 py-2 transition-colors hover:bg-ink/5 hover:text-ink">
+            <a
+              key={href}
+              href={href}
+              aria-current={href === active ? "location" : undefined}
+              className="rounded-full px-3.5 py-2 transition-colors hover:bg-ink/5 hover:text-ink aria-[current]:bg-ink/10 aria-[current]:text-ink"
+            >
               {label}
             </a>
           ))}
@@ -58,8 +79,6 @@ export default function Header() {
               </button>
             ))}
           </div>
-
-          <SoundToggle />
 
           <button
             type="button"
@@ -103,7 +122,12 @@ export default function Header() {
           <ul>
             {links.map(([href, label]) => (
               <li key={href}>
-                <a href={href} onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3.5 text-lg hover:bg-ink/5">
+                <a
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  aria-current={href === active ? "location" : undefined}
+                  className="block rounded-2xl px-4 py-3.5 text-lg hover:bg-ink/5 aria-[current]:bg-ink/10"
+                >
                   {label}
                 </a>
               </li>

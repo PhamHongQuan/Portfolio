@@ -30,16 +30,7 @@ export default function Footer() {
       </div>
       <div className="container-x flex flex-col justify-between gap-3 border-t border-line py-6 text-sm text-muted sm:flex-row">
         <p>
-          © {new Date().getFullYear()} {c.name}. {c.footer.rights}{" "}
-          {/* Required credit for the CC BY-SA recording in public/sounds/frogs.mp3 */}
-          <a
-            href="https://commons.wikimedia.org/wiki/File:Frogs_croaking_in_a_pipe_in_Thailand.flac"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="whitespace-nowrap underline-offset-2 hover:text-ink hover:underline"
-          >
-            {c.footer.frogCredit}: Amada44, CC BY-SA 3.0
-          </a>
+          © {new Date().getFullYear()} {c.name}. {c.footer.rights}
         </p>
         <a href="#top" className="inline-block py-1 hover:text-ink">
           {c.ui.backToTop}

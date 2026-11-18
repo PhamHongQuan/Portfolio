@@ -142,7 +142,7 @@ export default function Weather() {
     };
   }, [kind]);
 
-  // Lightning now and then in a storm; the sound engine answers with thunder (Ambience.tsx).
+  // Lightning now and then in a storm.
   useEffect(() => {
     if (kind !== "storm") return;
     let timer = 0;
@@ -151,7 +151,6 @@ export default function Weather() {
         duration: 750,
         easing: "ease-out",
       });
-      dispatchEvent(new CustomEvent("thunder", { detail: { delay: 0.4 + Math.random() * 2 } }));
       timer = window.setTimeout(strike, 7000 + Math.random() * 12000);
     };
     timer = window.setTimeout(strike, 3000 + Math.random() * 4000);

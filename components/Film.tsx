@@ -8,6 +8,9 @@ import { Fore, Mid, SetName, starfield } from "./Landscape";
 const HOLD = 0;
 const MOVE = 1.3;
 const SEG = HOLD + MOVE;
+// How far the camera trails the scroll, in ms (exponential, never overshoots). 0 = locked to the
+// scroll (felt jumpy); the old 140 felt springy. Tune here.
+const LAG = 90;
 
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
 // Smootherstep: starts and ends with zero speed and zero acceleration, so a transition begins softly
@@ -49,6 +52,7 @@ export default function Film({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const label = useRef<HTMLSpanElement>(null);
   const track = useRef<HTMLSpanElement>(null);
+  const snaps = useRef<HTMLDivElement>(null);
 
   // Quality: weak devices (or a measured low frame rate) get the light version: same scenes and
   // camera, fewer ambient effects. `?quality=low|high` forces either one.
@@ -214,6 +218,11 @@ export default function Film({ children }: { children: ReactNode }) {
       vh = innerHeight;
       film.style.height = `${((n - 1) * SEG + HOLD) * vh + vh}px`;
       top = film.getBoundingClientRect().top + scrollY;
+      // Native scroll-snap points, one per scene: the browser settles on a scene when the gesture
+      // ends (no JS easing, so nothing lags or springs back).
+      snaps.current?.replaceChildren(
+        ...scenes.map((_, i) => Object.assign(document.createElement("i"), { style: `top:${i * SEG * vh}px` })),
+      );
       // Shrink any scene whose content is taller than the screen, so nothing is ever cut off.
       film.querySelectorAll<HTMLElement>(".fit").forEach((f) => {
         f.style.setProperty("--fit", "1");
@@ -258,20 +267,24 @@ export default function Film({ children }: { children: ReactNode }) {
         el.toggleAttribute("data-warm", warm);
         el.inert = !(enter < 0.5 && leave < 0.5);
       });
+      // The scene the camera is nearest to, for the header menu (read via the "scene" event).
+      const id = scenes[Math.min(n - 1, Math.max(0, Math.round(p / SEG)))]?.id;
+      if (id && root.dataset.scene !== id) {
+        root.dataset.scene = id;
+        dispatchEvent(new Event("scene"));
+      }
     };
 
-    // The camera eases toward the scroll position instead of jumping with each wheel notch.
+    // The camera follows the scroll position directly: no easing, so it never lags or springs.
     let raf = 0;
     let lastTs = 0;
     const frame = (ts = performance.now()) => {
       raf = 0;
       const target = (scrollY - top) / vh;
-      // After a long gap (background tab, slow device) jump straight there instead of drifting.
       const dt = ts - lastTs;
-      const stale = dt > 100;
       lastTs = ts;
-      // Time-based easing (not per frame), so 60 Hz and 120 Hz screens glide at the same pace.
-      cur = Number.isNaN(cur) || stale ? target : cur + (target - cur) * (1 - Math.exp(-dt / 140));
+      // Time-based, so 60 Hz and 120 Hz glide alike; after a long gap (background tab) jump there.
+      cur = Number.isNaN(cur) || dt > 100 ? target : cur + (target - cur) * (1 - Math.exp(-dt / LAG));
       if (Math.abs(target - cur) < 0.0005) {
         cur = target;
         syncHash();
@@ -279,34 +292,20 @@ export default function Film({ children }: { children: ReactNode }) {
       render(cur);
     };
 
-    // Deep links: the address follows the scene you rest on (#work-2), without adding history
-    // entries or scrolling anything; opening such a link starts on that scene.
-    let shownHash = location.hash;
+    // Deep links: the address follows the scene you rest on (?s=work-2, which shares with that
+    // scene's preview image), without adding history entries; opening such a link starts there.
     const syncHash = () => {
       if (skipping) return;
       const i = Math.round(cur / SEG);
       if (i < 0 || i >= n || Math.abs(cur - i * SEG) > 0.02) return;
-      const hash = i === 0 ? "" : `#${scenes[i].id}`;
-      if (hash === shownHash) return;
-      shownHash = hash;
-      history.replaceState(history.state, "", hash || location.pathname + location.search);
+      const url = new URL(location.href);
+      url.hash = "";
+      if (i === 0) url.searchParams.delete("s");
+      else url.searchParams.set("s", scenes[i].id);
+      if (url.href !== location.href) history.replaceState(history.state, "", url);
     };
-    // Scrolling is never taken over. Only once the visitor has fully stopped does the page drift,
-    // gently, to the nearest scene, so it doesn't rest half way through a transition. It never
-    // pushes on to a further scene, so there is no overshoot.
     let skipping = false;
-    let settleT = 0;
-    const settle = () => {
-      if (skipping) return;
-      const p = (scrollY - top) / vh;
-      if (p <= 0 || p >= (n - 1) * SEG) return; // before the film or out past it (footer): free scroll
-      const y = top + Math.round(p / SEG) * SEG * vh;
-      if (Math.abs(y - scrollY) > 2) scrollTo({ top: y, behavior: "smooth" });
-    };
-
     const onScroll = () => {
-      clearTimeout(settleT);
-      settleT = window.setTimeout(settle, 250);
       if (raf) return;
       lastTs = performance.now(); // starting from rest is not a gap
       raf = requestAnimationFrame(frame);
@@ -355,6 +354,7 @@ export default function Film({ children }: { children: ReactNode }) {
       }
 
       skipping = true;
+      root.style.scrollSnapType = "none"; // the reel stops between scenes; snapping would yank it
       const dir = Math.sign(to - from);
       mark(from);
       // Name the destination the way the menu does ("Contact"), falling back to the scene's label.
@@ -378,6 +378,8 @@ export default function Film({ children }: { children: ReactNode }) {
       root.classList.remove("skipping"); // the frame grows back to full screen as the camera glides in
       scrollTo({ top: dest, behavior: "smooth" });
       skipping = false;
+      await wait(900); // ponytail: fixed wait for the glide; scrollend once Safari has it everywhere
+      root.style.scrollSnapType = "";
     };
 
     // Keyboard: ↓ / PageDown / Space next scene, ↑ / PageUp / Shift+Space previous, Home / End.
@@ -402,7 +404,6 @@ export default function Film({ children }: { children: ReactNode }) {
     // Back / Forward and hand-typed hashes.
     const onHash = () => {
       const to = scenes.findIndex((s) => `#${s.id}` === location.hash);
-      shownHash = location.hash;
       goTo(to < 0 ? 0 : to);
     };
 
@@ -431,13 +432,13 @@ export default function Film({ children }: { children: ReactNode }) {
       alive = false;
       cic(idle);
       timers.forEach(clearTimeout);
-      clearTimeout(settleT);
       ro.disconnect();
       mo.disconnect();
       removeEventListener("scroll", onScroll);
       document.removeEventListener("click", onClick);
       cancelAnimationFrame(raf);
       root.classList.remove("cinema", "skipping");
+      root.style.scrollSnapType = "";
       film.style.height = "";
       scenes.forEach((el, i) => {
         el.removeAttribute("style");
@@ -452,6 +453,7 @@ export default function Film({ children }: { children: ReactNode }) {
   return (
     <div ref={ref} className="film">
       <div className="screen">{children}</div>
+      <div ref={snaps} aria-hidden className="snaps" />
       {/* Fast-forward overlay: film reels either side of the shrunken frame and a caption with the
           chapter track underneath, shown while skipping scenes. */}
       <div aria-hidden className="skip-fx">

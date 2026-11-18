@@ -17,5 +17,7 @@ export const headScript = [
   `try{history.scrollRestoration="manual"}catch(e){}`,
   // A deep link (#work-2): take the hash off before the browser smooth-scrolls to that element by
   // itself, which would fight Film.tsx's own jump to the scene. Film reads it from data-start.
+  // A shared scene link (?s=work-2, which also gets that scene's preview image): start there too.
+  `var s=new URLSearchParams(location.search).get("s");if(s&&!location.hash)document.documentElement.dataset.start="#"+s`,
   `if(location.hash){document.documentElement.dataset.start=location.hash;history.replaceState(history.state,"",location.pathname+location.search)}`,
 ].join(";");

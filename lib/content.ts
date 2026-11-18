@@ -21,8 +21,6 @@ const en = {
     backToTop: "Back to top",
     copy: "Copy email",
     copied: "Copied",
-    soundOn: "Play ambient sound",
-    soundOff: "Mute ambient sound",
   },
   weather: {
     fallbackCity: "Ho Chi Minh City",
@@ -178,7 +176,6 @@ const en = {
             "Landscapes drawn from seeded SVG generators, rendered lazily in idle time",
             "Adaptive quality: weak devices or a measured low frame rate get a lighter version",
             "A sky that follows the visitor's clock and real local weather, with festivals through the year",
-            "Ambient sound synthesised with the Web Audio API, following the scene and the time of day",
             "Bilingual content, light and dark themes, keyboard navigation, deep links and a print stylesheet that turns the page into a résumé",
           ],
           outcome: "Press ? anywhere on the page to see its live performance numbers.",
@@ -239,7 +236,6 @@ const en = {
   footer: {
     tagline: "Frontend developer building fast, responsive interfaces.",
     rights: "All rights reserved.",
-    frogCredit: "Frog recording",
   },
 };
 
@@ -257,8 +253,6 @@ const vi: Content = {
     backToTop: "Lên đầu trang",
     copy: "Sao chép email",
     copied: "Đã sao chép",
-    soundOn: "Bật âm thanh nền",
-    soundOff: "Tắt âm thanh nền",
   },
   weather: {
     fallbackCity: "TP. Hồ Chí Minh",
@@ -414,7 +408,6 @@ const vi: Content = {
             "Phong cảnh vẽ bằng SVG sinh theo seed, chỉ vẽ khi trình duyệt rảnh",
             "Tự điều chỉnh chất lượng: máy yếu hoặc FPS đo được thấp sẽ dùng bản nhẹ hơn",
             "Bầu trời theo giờ và thời tiết thật nơi người xem, có lễ hội theo mùa trong năm",
-            "Âm thanh nền tạo bằng Web Audio API, đổi theo cảnh và thời điểm trong ngày",
             "Song ngữ, giao diện sáng và tối, điều hướng bằng bàn phím, deep link và bản in biến trang thành CV",
           ],
           outcome: "Bấm ? ở bất kỳ đâu trên trang để xem số liệu hiệu năng trực tiếp.",
@@ -475,7 +468,6 @@ const vi: Content = {
   footer: {
     tagline: "Lập trình viên frontend xây giao diện nhanh và responsive.",
     rights: "Bảo lưu mọi quyền.",
-    frogCredit: "Tiếng ếch",
   },
 };
 
