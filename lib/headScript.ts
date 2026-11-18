@@ -1,4 +1,4 @@
-import { clockFor } from "./clock";
+import { clockFor, themeFor } from "./clock";
 
 /**
  * Runs in <head> before the first paint. A plain module (not "use client"), so the root layout, a
@@ -9,7 +9,8 @@ import { clockFor } from "./clock";
  *   page is ready. Without JS none of this runs, so the page simply scrolls.
  */
 export const headScript = [
-  `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t="dark";document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}`,
+  // Theme: picked by hand in this visit, else day or night by the visitor's clock (lib/clock.ts).
+  `try{var t=sessionStorage.getItem("theme");if(t!=="light"&&t!=="dark"){var h=new Date();t=(${themeFor.toString()})(h.getHours()+h.getMinutes()/60)}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="dark"}`,
   `try{var d=new Date();document.documentElement.dataset.clock=(${clockFor.toString()})(document.documentElement.dataset.theme,d.getHours()+d.getMinutes()/60,location.search)}catch(e){}`,
   `document.documentElement.setAttribute("data-opening","")`,
   // Every load (F5 included) starts from the opening: no restoring the old scroll position. A deep

@@ -23,7 +23,14 @@ export function clockFor(theme: string, hour: number, search: string): Clock {
   return "night";
 }
 
-export const clockNow = (theme: string) => {
+/** Default theme from the visitor's clock: light by day (06:30–18:30), dark at night. Inlined in <head> too. */
+export function themeFor(hour: number): "light" | "dark" {
+  return hour >= 6.5 && hour < 18.5 ? "light" : "dark";
+}
+
+export const hourNow = () => {
   const d = new Date();
-  return clockFor(theme, d.getHours() + d.getMinutes() / 60, location.search);
+  return d.getHours() + d.getMinutes() / 60;
 };
+
+export const clockNow = (theme: string) => clockFor(theme, hourNow(), location.search);
