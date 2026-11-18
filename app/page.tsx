@@ -11,18 +11,24 @@ import PrintCV from "@/components/PrintCV";
 import Weather from "@/components/Weather";
 import Seasons from "@/components/Seasons";
 import PerfHud from "@/components/PerfHud";
+import { getSite } from "@/lib/site";
 
-export default function Home() {
+// Hero always opens the film; the rest follow the admin's order (settings.sections).
+const scenes = { about: About, stack: Stack, projects: Projects, experience: Experience, contact: Contact };
+
+export default async function Home() {
+  const { settings } = await getSite();
   return (
     <>
       <main id="main">
         <Film>
           <Hero />
-          <About />
-          <Stack />
-          <Projects />
-          <Experience />
-          <Contact />
+          {settings.sections
+            .filter((s) => s.visible)
+            .map(({ id }) => {
+              const Section = scenes[id];
+              return <Section key={id} />;
+            })}
         </Film>
       </main>
       <Footer />

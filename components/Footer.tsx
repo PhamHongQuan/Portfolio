@@ -5,7 +5,8 @@ import { navLinks } from "./Header";
 import Logo from "./Logo";
 
 export default function Footer() {
-  const { c } = useLanguage();
+  const site = useLanguage();
+  const { c } = site;
 
   return (
     <footer className="relative">
@@ -18,7 +19,7 @@ export default function Footer() {
         </div>
         <nav aria-label={c.ui.nav}>
           <ul className="flex flex-wrap gap-x-6 gap-y-2 text-muted">
-            {navLinks(c).map(([href, label]) => (
+            {navLinks(site).map(([href, label]) => (
               <li key={href}>
                 <a href={href} className="inline-block py-1 hover:text-ink">
                   {label}

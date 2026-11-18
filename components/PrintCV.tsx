@@ -1,17 +1,16 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { profile } from "@/lib/content";
 
 const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 
 /**
  * The page as a one-page résumé. Hidden on screen; when printing (Ctrl+P / Save as PDF) it is the only
- * thing on the paper, in the language the visitor is reading. Built from lib/content.ts, so it never
+ * thing on the paper, in the language the visitor is reading. Built from the same content as the site, so it never
  * drifts from the site.
  */
 export default function PrintCV() {
-  const { c } = useLanguage();
+  const { c, profile } = useLanguage();
   const contacts = [
     profile.email,
     profile.phone,

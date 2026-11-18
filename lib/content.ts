@@ -473,3 +473,25 @@ const vi: Content = {
 
 export const content = { en, vi };
 export type Language = keyof typeof content;
+
+// Page-level settings the admin can change. Hero always opens the film, so it is not in `sections`.
+export const sectionIds = ["about", "stack", "projects", "experience", "contact"] as const;
+export type SectionId = (typeof sectionIds)[number];
+
+// Colour tokens the admin may override per theme (see app/globals.css for the defaults).
+export const themeTokens = ["bg", "surface", "ink", "muted", "line", "accent", "on-accent", "sun", "sun-ink", "glow"] as const;
+
+export const settings = {
+  sections: sectionIds.map((id) => ({ id: id as SectionId, visible: true })),
+  theme: { light: {} as Record<string, string>, dark: {} as Record<string, string> },
+  seo: {
+    title: "Phạm Hồng Quân, Frontend Developer",
+    description:
+      "Frontend developer building fast, responsive interfaces with React, Next.js and Tailwind CSS, with enough backend to wire them to real APIs.",
+    keywords: ["Frontend Developer", "React", "Next.js", "TypeScript", "Tailwind CSS", "REST API", "Laravel"],
+  },
+};
+
+export type Profile = typeof profile;
+export type Settings = typeof settings;
+export type Site = { content: typeof content; profile: Profile; settings: Settings };

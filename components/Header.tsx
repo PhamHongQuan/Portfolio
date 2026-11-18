@@ -5,13 +5,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import Logo from "./Logo";
 
-export const navLinks = (c: ReturnType<typeof useLanguage>["c"]) => [
-  ["#about", c.nav.about],
-  ["#stack", c.nav.stack],
-  ["#work", c.nav.work],
-  ["#experience", c.nav.experience],
-  ["#contact", c.nav.contact],
-];
+// Menu entries follow the admin's section order and hide hidden sections.
+export const navLinks = ({ c, sections }: Pick<ReturnType<typeof useLanguage>, "c" | "sections">) => {
+  const links = {
+    about: ["#about", c.nav.about],
+    stack: ["#stack", c.nav.stack],
+    projects: ["#work", c.nav.work],
+    experience: ["#experience", c.nav.experience],
+    contact: ["#contact", c.nav.contact],
+  };
+  return sections.filter((s) => s.visible).map((s) => links[s.id]);
+};
 
 const onScene = (l: () => void) => {
   addEventListener("scene", l);
@@ -31,7 +35,8 @@ const useActive = (hrefs: string[]) => {
 
 // Floating dark glass pill, the same in both themes.
 export default function Header() {
-  const { c, language, setLanguage } = useLanguage();
+  const site = useLanguage();
+  const { c, language, setLanguage } = site;
   const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
 
@@ -41,7 +46,7 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const links = navLinks(c);
+  const links = navLinks(site);
   const active = useActive(links.map(([href]) => href));
 
   return (

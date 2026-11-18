@@ -6,8 +6,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { headScript } from "@/lib/headScript";
 import Header from "@/components/Header";
 import Opening from "@/components/Opening";
-import { profile } from "@/lib/content";
-import { siteDescription as description, siteTitle as title } from "@/lib/share";
+import { getSite, themeCss } from "@/lib/site";
+import { profile as fallback } from "@/lib/content";
 
 // Unbounded for display type (bold, wide, characterful), Manrope for text.
 const display = Unbounded({
@@ -22,35 +22,43 @@ const body = Manrope({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(profile.site),
-  title,
-  description,
-  keywords: ["Frontend Developer", "React", "Next.js", "TypeScript", "Tailwind CSS", "REST API", "Laravel"],
-  authors: [{ name: "Phạm Hồng Quân" }],
-  alternates: { canonical: "/" },
-  openGraph: { title, description, type: "profile", url: "/" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { profile, content, settings } = await getSite();
+  const { title, description, keywords } = settings.seo;
+  return {
+    metadataBase: new URL(URL.canParse(profile.site) ? profile.site : fallback.site),
+    title,
+    description,
+    keywords,
+    authors: [{ name: content.en.name }],
+    alternates: { canonical: "/" },
+    openGraph: { title, description, type: "profile", url: "/" },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
 
-const personLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Phạm Hồng Quân",
-  jobTitle: "Frontend Developer",
-  url: profile.site,
-  email: `mailto:${profile.email}`,
-  address: { "@type": "PostalAddress", addressLocality: "Ho Chi Minh City", addressCountry: "VN" },
-  knowsAbout: ["React", "Next.js", "TypeScript", "Tailwind CSS", "REST APIs", "Laravel", "AI coding agents"],
-  sameAs: [profile.github, profile.linkedin].filter(Boolean),
-};
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const site = await getSite();
+  const { profile, content, settings } = site;
+  const personLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: content.en.name,
+    jobTitle: content.en.hero.role,
+    url: profile.site,
+    email: `mailto:${profile.email}`,
+    address: { "@type": "PostalAddress", addressLocality: "Ho Chi Minh City", addressCountry: "VN" },
+    knowsAbout: content.en.hero.stack,
+    sameAs: [profile.github, profile.linkedin].filter(Boolean),
+  };
+  const theme = themeCss(settings.theme);
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: headScript }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd).replaceAll("<", "\\u003c") }} />
+        {theme && <style dangerouslySetInnerHTML={{ __html: theme }} />}
       </head>
       <body className={`${display.variable} ${body.variable} font-sans`}>
         <Opening />
@@ -61,7 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           Skip to content
         </a>
         <ThemeProvider>
-          <LanguageProvider>
+          <LanguageProvider site={site}>
             <Header />
             {children}
           </LanguageProvider>

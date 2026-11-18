@@ -1,12 +1,11 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { profile } from "@/lib/content";
 import { Scene } from "./Film";
 
 // Opening shot: the whole valley seen from far away, under the aurora and the moon.
 export default function Hero() {
-  const { c } = useLanguage();
+  const { c, profile } = useLanguage();
   const h = c.hero;
   let n = 0; // running letter index for the staggered entrance
 

@@ -6,7 +6,8 @@
     "dev": "next dev -p 9000",
     "build": "next build",
     "start": "next start -p 9000",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node --experimental-strip-types scripts/seed.ts > supabase/seed.sql"
   },
   "dependencies": {
     "next": "16.1.6",

@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { profile } from "@/lib/content";
 import { Scene } from "./Film";
 
 export default function Contact() {
-  const { c } = useLanguage();
+  const { c, profile } = useLanguage();
   const k = c.contact;
   const [copied, setCopied] = useState(false);
   const timer = useRef(0);

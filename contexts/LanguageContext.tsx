@@ -1,17 +1,20 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { content, Content, Language } from "@/lib/content";
+import type { Content, Language, Site } from "@/lib/content";
 
 type LanguageContextType = {
   language: Language;
   setLanguage: (lang: Language) => void;
   c: Content;
+  profile: Site["profile"];
+  sections: Site["settings"]["sections"];
 };
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+// The site comes from the server (lib/site.ts: Supabase over the defaults), so the admin can change it.
+export function LanguageProvider({ site, children }: { site: Site; children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
 
   useEffect(() => {
@@ -34,7 +37,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, c: content[language] }}>
+    <LanguageContext.Provider value={{ language, setLanguage, c: site.content[language], profile: site.profile, sections: site.settings.sections }}>
       {children}
     </LanguageContext.Provider>
   );
