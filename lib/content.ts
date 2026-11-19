@@ -638,16 +638,20 @@ export const fixedScenes = [
 // The saved background for a screen, with anything missing or invalid taken from its default.
 export function lookFor(list: Look[], key: string, fallback?: Look): Look {
   const d = fallback ?? fixedScenes.find((l) => l.id === key) ?? look(key, "meadow", "night", 1);
-  const l = list.find((x) => x.id === key);
+  const l = list.find((x) => x?.id === key);
   if (!l) return d;
-  return {
-    ...l,
-    set: sceneSets.includes(l.set) ? l.set : d.set,
-    time: sceneTimes.includes(l.time) ? l.time : d.time,
-    palette: scenePalettes.includes(l.palette) ? l.palette : d.palette,
-    wind: sceneWinds.includes(l.wind) ? l.wind : d.wind,
-    seed: Number.isFinite(l.seed) ? l.seed : d.seed,
+  // Field by field: an entry saved before a field existed (or with a bad value) keeps the default.
+  const ok = <K extends keyof Look>(k: K, valid: (v: Look[K]) => boolean) => (valid(l[k]) ? l[k] : d[k]);
+  const out = {
+    ...d,
+    set: ok("set", (v) => sceneSets.includes(v)),
+    time: ok("time", (v) => sceneTimes.includes(v)),
+    palette: ok("palette", (v) => scenePalettes.includes(v)),
+    wind: ok("wind", (v) => sceneWinds.includes(v)),
+    seed: ok("seed", (v) => Number.isFinite(v)),
   };
+  for (const k of sceneLayers) out[k] = ok(k, (v) => typeof v === "boolean");
+  return out;
 }
 
 export const settings = {

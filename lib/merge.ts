@@ -33,6 +33,10 @@ export type Row = { key: string; data: Json };
 export function fromRows(def: Site, rows: Row[]): Site {
   const row = (k: string) => rows.find((r) => r.key === k)?.data;
   const settings = merge(def.settings, row("settings")) as Site["settings"];
+  // Background entries stay as saved: merge() would fill fields added later with false (switching
+  // layers off); lookFor() fills them from each screen's own default instead.
+  const scenery = (row("settings") as { scenery?: Json } | undefined)?.scenery;
+  if (Array.isArray(scenery)) settings.scenery = scenery.filter((x) => isObj(x) && typeof x.id === "string") as Site["settings"]["scenery"];
   // Every section exactly once, in the admin's order; unknown ids dropped, missing ones appended.
   const ids = def.settings.sections.map((d) => d.id);
   const order = settings.sections.filter((s, i, a) => ids.includes(s.id) && a.findIndex((x) => x.id === s.id) === i);

@@ -1,7 +1,7 @@
 // Run: npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { content, profile, settings } from "../lib/content.ts";
+import { content, lookFor, profile, settings } from "../lib/content.ts";
 import { fromRows } from "../lib/merge.ts";
 
 const def = { content, profile, settings };
@@ -20,6 +20,17 @@ test("fromRows: wrong types fall back, sections deduped and completed", () => {
   assert.deepEqual(s.settings.sections.map((x) => x.id), ["contact", "about", "stack", "projects", "experience"]);
   assert.equal(s.settings.sections[0].visible, false);
   assert.deepEqual(settings.sections.map((x) => x.id), ["about", "stack", "projects", "experience", "contact"], "defaults not mutated");
+});
+
+test("scenery: an entry saved before new fields existed keeps their defaults", () => {
+  const s = fromRows(def, [{ key: "settings", data: { scenery: [{ id: "about", set: "forest", time: "dawn", seed: 7, trees: false, grass: true, drift: true, mist: true }, 5] } }]);
+  const l = lookFor(s.settings.scenery, "about");
+  assert.equal(l.set, "forest");
+  assert.equal(l.trees, false);
+  assert.equal(l.moon, true, "about has the moon by default");
+  assert.equal(l.stars, true);
+  assert.equal(l.palette, "green");
+  assert.equal(lookFor([{ id: "top", set: "nope" } as never], "top").set, "panorama");
 });
 
 import { applyOp, clean, getIn, setAll, setIn, validate } from "../lib/admin.ts";
