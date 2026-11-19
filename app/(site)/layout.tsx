@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Unbounded } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { headScript } from "@/lib/headScript";

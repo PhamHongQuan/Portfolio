@@ -1,12 +1,14 @@
-# Portfolio ↔ Admin: hợp đồng dữ liệu
+# Admin: sửa nội dung portfolio
 
-Tài liệu này là cấu hình **hiện tại** của portfolio, để project admin đọc/ghi đúng dữ liệu. Portfolio chỉ **đọc** Supabase; mọi thao tác ghi do admin làm.
+Trang `/admin` nằm ngay trong app này. Trang công khai chỉ **đọc** Supabase; mọi thao tác ghi đi qua `/admin`.
 
 ```
-Admin ──ghi──▶ Supabase (bảng site_content + bucket portfolio)
-  │                       │
-  └─POST /api/revalidate──▶ Portfolio (Next.js) ──đọc lúc build / sau revalidate──┘
+/admin ──đăng nhập + ghi (RLS)──▶ Supabase (bảng site_content + bucket portfolio)
+   │                                   │
+   └─server action publish──▶ xoá cache tag "content" ──▶ trang / đọc lại──┘
 ```
+
+Thêm trường mới vào `lib/content.ts` thì sau khi deploy form admin tự có ô cho trường đó (form sinh từ cấu trúc mặc định).
 
 ---
 
@@ -39,32 +41,22 @@ RLS:
 
 ---
 
-## 2. Biến môi trường
+## 2. Biến môi trường (`.env.local`, và trên Vercel)
 
-### Portfolio (`.env.local`, và trên Vercel)
+| Biến                 | Ví dụ                       | Dùng để                                                         |
+| -------------------- | --------------------------- | --------------------------------------------------------------- |
+| `SUPABASE_URL`       | `https://xxxx.supabase.co`  | Đọc/ghi `site_content`. Thiếu → trang dùng mặc định, `/admin` báo chưa cấu hình |
+| `SUPABASE_ANON_KEY`  | `eyJ...`                    | Anon key. Quyền ghi đến từ RLS (email admin), **không** cần service role key |
 
-| Biến                 | Ví dụ                       | Dùng để                                          |
-| -------------------- | --------------------------- | ------------------------------------------------ |
-| `SUPABASE_URL`       | `https://xxxx.supabase.co`  | Đọc `site_content`. Thiếu → dùng nội dung mặc định |
-| `SUPABASE_ANON_KEY`  | `eyJ...`                    | Anon key (chỉ đọc nhờ RLS)                       |
-| `REVALIDATE_SECRET`  | chuỗi ngẫu nhiên ≥ 32 ký tự | Admin gửi kèm khi gọi revalidate                 |
-
-### Admin
-
-| Biến                          | Ghi chú                                                         |
-| ----------------------------- | --------------------------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`    | Giống `SUPABASE_URL`                                            |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Đăng nhập bằng Supabase Auth; quyền ghi đến từ RLS, **không** cần service role key |
-| `PORTFOLIO_URL`               | Ví dụ `https://hquanpham.id.vn`                                 |
-| `REVALIDATE_SECRET`           | Giống bên portfolio. **Chỉ dùng phía server** của admin (route/server action), không đưa ra client |
+`/admin` được prerender nên đọc hai biến này lúc build: đổi biến thì deploy lại.
 
 ---
 
 ## 3. Cấu trúc dữ liệu
 
-Nguồn chuẩn: `lib/content.ts` (giá trị mặc định + kiểu). Admin nên copy các kiểu dưới đây (hoặc viết schema `zod` tương ứng) để kiểm tra trước khi lưu.
+Nguồn chuẩn: `lib/content.ts` (giá trị mặc định + kiểu). Phần dưới để tham khảo khi sửa thẳng dữ liệu trong Supabase.
 
-### Quy tắc portfolio áp dụng khi đọc (`lib/site.ts → merge`)
+### Quy tắc portfolio áp dụng khi đọc (`lib/merge.ts → fromRows`)
 
 Portfolio **không bao giờ vỡ** vì dữ liệu sai, nhưng sẽ âm thầm thay bằng giá trị khác. Admin cần biết để không bất ngờ:
 
@@ -242,30 +234,24 @@ Màu phong cảnh (trời, núi, cây, nước...) **không** cho chỉnh từ a
 
 ---
 
-## 5. Sau khi lưu: gọi revalidate
+## 5. Dùng trang admin
 
-Trang được prerender tĩnh; nội dung Supabase được cache với tag `content`. Mỗi lần admin lưu xong (có thể gộp nhiều thay đổi rồi gọi một lần):
+1. Mở `/admin`, đăng nhập bằng tài khoản admin (Supabase Auth).
+2. Ba tab:
+   - **Nội dung**: mọi trường của `en` và `vi`, hai ô EN | VI cạnh nhau. Thêm/xoá/sắp xếp phần tử mảng (dự án, job, stats...) áp cho **cả hai** ngôn ngữ. Mảng chữ (stack, tools, did...) nhập mỗi dòng một mục.
+   - **Hồ sơ**: `profile` + nút upload CV (PDF lên bucket `portfolio/cv.pdf`, ô `cv` tự điền link có `?v=` để phá cache). File lên ngay; link mới có hiệu lực khi lưu.
+   - **Cài đặt**: thứ tự/ẩn hiện section, màu theme (để trống = mặc định), SEO.
+3. **Lưu & xuất bản**: kiểm tra → ghi cả 4 dòng → xoá cache. Lượt truy cập kế tiếp thấy nội dung mới. Bị chặn nếu:
+   - `profile.site` không phải URL hợp lệ;
+   - dự án thiếu `url`, hoặc trùng `url` với dự án khác;
+   - `url` của cùng một dự án khác nhau giữa EN và VI;
+   - `about.stats[].value` không phải số;
+   - màu theme không khớp `^[#\w\s().,/%-]+$`;
+   - mảng object (dự án, job...) có số phần tử khác nhau giữa EN và VI.
+4. **Khôi phục mặc định**: đặt tab đang mở về giá trị trong `lib/content.ts`. Chỉ đổi form, phải bấm Lưu mới ghi.
+5. Rời trang khi còn thay đổi chưa lưu → trình duyệt hỏi lại. Phiên hết hạn → về form đăng nhập, đăng nhập lại vẫn giữ thay đổi.
 
-```http
-POST {PORTFOLIO_URL}/api/revalidate
-x-revalidate-secret: {REVALIDATE_SECRET}
-```
-
-| Kết quả | Ý nghĩa                                      |
-| ------- | -------------------------------------------- |
-| `200 {"ok":true,"revalidated":"content","at":"..."}` | Cache đã xoá; lượt truy cập kế tiếp thấy nội dung mới |
-| `401 {"ok":false}` | Sai/thiếu secret, hoặc portfolio chưa đặt `REVALIDATE_SECRET` |
-
-Ví dụ (server action / route handler của admin, không gọi từ trình duyệt vì lộ secret):
-
-```ts
-await fetch(`${process.env.PORTFOLIO_URL}/api/revalidate`, {
-  method: "POST",
-  headers: { "x-revalidate-secret": process.env.REVALIDATE_SECRET! },
-});
-```
-
-Không cần build lại portfolio khi: sửa chữ, thêm/xoá dự án, đổi thứ tự/ẩn section, đổi màu, SEO, profile.
+Không cần deploy khi: sửa chữ, thêm/xoá dự án, đổi thứ tự/ẩn section, đổi màu, SEO, profile.
 **Cần** sửa code + deploy khi: thêm trường mới, thêm section mới, đổi phong cảnh, logo, font.
 
 ---
@@ -280,23 +266,16 @@ Không cần build lại portfolio khi: sửa chữ, thêm/xoá dự án, đổi
 
 ---
 
-## 7. Gợi ý cho trang admin
-
-- Một form cho mỗi key (`profile`, `settings`), và form cho nội dung có tab **EN / VI** đặt cạnh nhau. Khi thêm/xoá/sắp xếp phần tử mảng (dự án, job, học vấn, stats...) thì làm **cùng lúc cho cả hai ngôn ngữ**.
-- Lưu bằng `upsert` vào `site_content` theo `key`, rồi gọi revalidate.
-- Kiểm tra trước khi lưu: `projects.items[].url` duy nhất và không rỗng, `about.stats[].value` là số, `profile.site` là URL hợp lệ, màu khớp regex `^[#\w\s().,/%-]+$`.
-- Upload file vào bucket `portfolio`, lấy public URL ghi vào trường tương ứng (hiện chỉ có `profile.cv`).
-- Nút "Khôi phục mặc định" = chạy lại `supabase/seed.sql` (hoặc xoá dòng: portfolio tự dùng mặc định).
-
----
-
-## 8. File liên quan trong portfolio
+## 7. File liên quan
 
 | File                              | Vai trò                                                      |
 | --------------------------------- | ------------------------------------------------------------ |
 | `lib/content.ts`                  | Giá trị mặc định + kiểu (`Content`, `Profile`, `Settings`)   |
-| `lib/site.ts`                     | `getSite()` đọc Supabase, `merge()` kiểm tra kiểu, `themeCss()` |
-| `app/api/revalidate/route.ts`     | Endpoint revalidate                                          |
+| `lib/merge.ts`                    | `merge()`, `blank()`, `fromRows()`: phủ dữ liệu Supabase lên mặc định |
+| `lib/site.ts`                     | `getSite()` đọc Supabase (cache tag `content`), `themeCss()` |
+| `lib/admin.ts`                    | Sửa theo đường dẫn, thao tác mảng EN/VI, `clean()`, `validate()` |
+| `app/(admin)/admin/*`             | Trang admin: `Admin.tsx`, `Field.tsx` (form tự sinh), `Extras.tsx`, `actions.ts` (publish) |
+| `scripts/admin.test.ts`           | `npm test`                                                   |
 | `lib/share.ts`                    | Dữ liệu ảnh preview cho từng scene                           |
 | `supabase/schema.sql`             | Bảng, RLS, bucket                                            |
 | `supabase/seed.sql`, `scripts/seed.ts` | Dữ liệu ban đầu (`npm run seed` để sinh lại)            |
