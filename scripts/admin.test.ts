@@ -96,3 +96,12 @@ test("validate survives a partial project item", () => {
   const s = setIn(clone(), ["content", "vi", "projects", "items", 0], { name: "X" });
   assert.doesNotThrow(() => validate(s));
 });
+
+import { leftovers, sections } from "../app/(admin)/admin/labels.ts";
+
+test("every content field belongs to a menu section; new fields land in Khác", () => {
+  assert.deepEqual(leftovers(content.en), []);
+  assert.deepEqual(leftovers({ ...content.en, brandNew: "x", hero: { ...content.en.hero, extra: [] } }), ["hero.extra", "brandNew"]);
+  const paths = sections.flatMap((s) => s.paths ?? []);
+  assert.equal(new Set(paths).size, paths.length, "no path in two sections");
+});

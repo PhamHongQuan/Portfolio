@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import type { Content, Language, Site } from "@/lib/content";
+import { themeCss } from "@/lib/themeCss";
 
 type LanguageContextType = {
   language: Language;
@@ -14,8 +15,37 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
 // The site comes from the server (lib/site.ts: Supabase over the defaults), so the admin can change it.
-export function LanguageProvider({ site, children }: { site: Site; children: ReactNode }) {
+// The admin (/admin) previews unsaved drafts in an iframe or a tab it opened. Only a same-origin
+// window at /admin may send one, so visitors never see a draft.
+function adminWindow(): Window | null {
+  for (const w of [window.parent !== window ? window.parent : null, window.opener as Window | null]) {
+    try {
+      if (w && w.location.origin === location.origin && w.location.pathname.startsWith("/admin")) return w;
+    } catch {}
+  }
+  return null;
+}
+
+export function LanguageProvider({ site: saved, children }: { site: Site; children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
+  const [draft, setDraft] = useState<Site | null>(null);
+  const site = draft ?? saved;
+
+  useEffect(() => {
+    const admin = adminWindow();
+    if (!admin) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin === location.origin && e.source === admin && e.data?.type === "preview") setDraft(e.data.site as Site);
+    };
+    addEventListener("message", onMessage);
+    admin.postMessage({ type: "preview-ready" }, location.origin);
+    return () => removeEventListener("message", onMessage);
+  }, []);
+
+  useEffect(() => {
+    const style = document.getElementById("site-theme");
+    if (draft && style) style.textContent = themeCss(draft.settings.theme);
+  }, [draft]);
 
   useEffect(() => {
     try {
@@ -39,6 +69,11 @@ export function LanguageProvider({ site, children }: { site: Site; children: Rea
   return (
     <LanguageContext.Provider value={{ language, setLanguage, c: site.content[language], profile: site.profile, sections: site.settings.sections }}>
       {children}
+      {draft && (
+        <div className="pointer-events-none fixed bottom-3 left-1/2 z-[70] -translate-x-1/2 rounded-full bg-sun px-3 py-1 text-xs font-semibold text-black shadow">
+          Xem trước · chưa xuất bản
+        </div>
+      )}
     </LanguageContext.Provider>
   );
 }

@@ -1,0 +1,109 @@
+<h2>Bố cục tổng thể cho trang admin</h2>
+<p class="subtitle">Cả 3 đều: nền sáng, nhãn tiếng Việt dễ hiểu, mỗi lần chỉ hiện <b>một mục</b>, chữ giao diện vặt dồn vào nhóm "Nâng cao", dự án/kinh nghiệm là danh sách gập lại. Khác nhau ở cách chuyển mục và cách sửa EN/VI.</p>
+
+<style>
+  .mk{font:12px/1.4 system-ui;background:#f6f7f9;color:#1f2937;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb}
+  .mk .top{display:flex;gap:6px;align-items:center;padding:6px 8px;background:#fff;border-bottom:1px solid #e5e7eb}
+  .mk .btn{background:#0e8a5a;color:#fff;border-radius:5px;padding:2px 8px;margin-left:auto}
+  .mk .side{width:118px;background:#fff;border-right:1px solid #e5e7eb;padding:6px}
+  .mk .side div{padding:3px 6px;border-radius:4px}
+  .mk .side .on{background:#e7f5ee;color:#0e8a5a;font-weight:600}
+  .mk .side .grp{color:#9ca3af;font-size:10px;text-transform:uppercase;margin-top:6px}
+  .mk .main{flex:1;padding:8px}
+  .mk .f{background:#fff;border:1px solid #e5e7eb;border-radius:5px;padding:4px 6px;margin:3px 0}
+  .mk .lab{color:#6b7280;font-size:11px;margin-top:6px}
+  .mk .row{display:flex;justify-content:space-between;background:#fff;border:1px solid #e5e7eb;border-radius:5px;padding:5px 7px;margin:4px 0}
+  .mk .pill{display:inline-block;padding:1px 7px;border-radius:99px;border:1px solid #d1d5db;margin-right:3px}
+  .mk .pill.on{background:#1f2937;color:#fff;border-color:#1f2937}
+  .mk .g2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+  .mk .tabs{display:flex;gap:4px;padding:6px 8px;background:#fff;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
+  .mk .tabs span{padding:2px 7px;border-radius:4px}
+  .mk .tabs .on{background:#e7f5ee;color:#0e8a5a;font-weight:600}
+  .mk .card{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:7px}
+</style>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mk">
+        <div class="top"><b>Admin</b><span style="color:#9ca3af">· Chưa lưu</span><span class="btn">Lưu &amp; xuất bản</span></div>
+        <div style="display:flex">
+          <div class="side">
+            <div class="grp">Nội dung</div>
+            <div>Hero</div><div>Giới thiệu</div><div class="on">Dự án</div><div>Kinh nghiệm</div><div>Liên hệ</div>
+            <div class="grp">Trang</div>
+            <div>Hồ sơ &amp; CV</div><div>Sắp xếp mục</div><div>Màu</div><div>SEO</div>
+            <div class="grp">Nâng cao</div><div>Chữ giao diện</div>
+          </div>
+          <div class="main">
+            <b>Dự án</b>
+            <div class="lab">Tiêu đề mục</div>
+            <div class="g2"><div class="f">EN · Selected work</div><div class="f">VI · Dự án tiêu biểu</div></div>
+            <div class="row"><span>▸ Rada360 · 2025</span><span>↑ ↓ ✕</span></div>
+            <div class="row"><span>▸ AI360 · 2025</span><span>↑ ↓ ✕</span></div>
+            <div class="row"><span>▸ Portfolio · 2026</span><span>↑ ↓ ✕</span></div>
+            <div style="color:#0e8a5a">+ Thêm dự án</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Menu bên trái + EN/VI cạnh nhau</h3>
+      <p>Như CMS quen thuộc. Thấy hai ngôn ngữ cùng lúc nên khó quên dịch. Trên điện thoại menu thành nút ☰.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mk">
+        <div class="top"><b>Admin</b><span class="pill on">EN</span><span class="pill">VI</span><span class="btn">Lưu &amp; xuất bản</span></div>
+        <div style="display:flex">
+          <div class="side">
+            <div class="grp">Nội dung</div>
+            <div>Hero</div><div>Giới thiệu</div><div class="on">Dự án</div><div>Kinh nghiệm</div><div>Liên hệ</div>
+            <div class="grp">Trang</div>
+            <div>Hồ sơ &amp; CV</div><div>Sắp xếp mục</div><div>Màu</div><div>SEO</div>
+            <div class="grp">Nâng cao</div><div>Chữ giao diện</div>
+          </div>
+          <div class="main">
+            <b>Dự án</b> <span style="color:#9ca3af">— đang sửa: English</span>
+            <div class="lab">Tiêu đề mục</div>
+            <div class="f">Selected work</div>
+            <div class="row"><span>▸ Rada360 · 2025</span><span>↑ ↓ ✕</span></div>
+            <div class="row"><span>▸ AI360 · 2025</span><span>↑ ↓ ✕</span></div>
+            <div class="row"><span>▸ Portfolio · 2026</span><span>↑ ↓ ✕</span></div>
+            <div style="color:#0e8a5a">+ Thêm dự án</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Menu bên trái + công tắc EN/VI</h3>
+      <p>Mỗi lần sửa một ngôn ngữ, ô rộng rãi hơn, dễ đọc đoạn văn dài. Phải bấm qua lại để dịch.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mk">
+        <div class="top"><b>Admin</b><span class="btn">Lưu &amp; xuất bản</span></div>
+        <div class="tabs"><span>Hero</span><span>Giới thiệu</span><span class="on">Dự án</span><span>Kinh nghiệm</span><span>Liên hệ</span><span>Hồ sơ</span><span>Trang</span><span>Nâng cao</span></div>
+        <div class="main">
+          <div class="g2">
+            <div class="card"><b>Rada360</b><br><span style="color:#6b7280">Booking system · 2025</span><br><span style="color:#0e8a5a">Sửa →</span></div>
+            <div class="card"><b>AI360</b><br><span style="color:#6b7280">SaaS AI chatbot · 2025</span><br><span style="color:#0e8a5a">Sửa →</span></div>
+            <div class="card"><b>Portfolio</b><br><span style="color:#6b7280">Personal site · 2026</span><br><span style="color:#0e8a5a">Sửa →</span></div>
+            <div class="card" style="border-style:dashed;color:#0e8a5a;display:grid;place-items:center">+ Thêm</div>
+          </div>
+          <div style="color:#9ca3af;margin-top:6px">Bấm "Sửa" → mở khung bên phải với form EN | VI</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Tab ngang + thẻ, sửa trong khung trượt</h3>
+      <p>Nhìn gọn, giống dashboard. Sửa một dự án mở khung riêng. Nhiều thao tác bấm hơn, tab ngang dễ tràn trên điện thoại.</p>
+    </div>
+  </div>
+
+</div>

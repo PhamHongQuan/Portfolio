@@ -9,6 +9,11 @@ create table if not exists public.site_content (
 
 alter table public.site_content enable row level security;
 
+-- New Supabase projects don't grant table access to the API roles by default; RLS below still
+-- decides which rows each role sees and who may write.
+grant select on public.site_content to anon, authenticated;
+grant insert, update, delete on public.site_content to authenticated;
+
 drop policy if exists "public read" on public.site_content;
 create policy "public read" on public.site_content for select using (true);
 

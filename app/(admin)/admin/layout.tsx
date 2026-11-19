@@ -6,8 +6,8 @@ export const metadata: Metadata = { title: "Admin", robots: { index: false, foll
 // Own root layout: none of the site's film, header or Supabase read.
 export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="vi" data-theme="dark">
-      <body className="font-sans">{children}</body>
+    <html lang="vi" data-theme="light">
+      <body className="bg-bg font-sans text-ink">{children}</body>
     </html>
   );
 }

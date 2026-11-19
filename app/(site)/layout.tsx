@@ -58,7 +58,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: headScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd).replaceAll("<", "\\u003c") }} />
-        {theme && <style dangerouslySetInnerHTML={{ __html: theme }} />}
+        <style id="site-theme" dangerouslySetInnerHTML={{ __html: theme }} />
       </head>
       <body className={`${display.variable} ${body.variable} font-sans`}>
         <Opening />

@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { content, profile, settings, themeTokens, type Site } from "./content";
+import { content, profile, settings, type Site } from "./content";
 import { fromRows, type Row } from "./merge";
 
 // Server only. Reads the site from Supabase (table `site_content`, one row per key: en, vi, profile,
@@ -28,15 +28,4 @@ export const getSite = cache(async (): Promise<Site> => {
   }
 });
 
-// Admin colour overrides as CSS, after globals.css. Only known tokens, and values that can't break
-// out of the declaration.
-export function themeCss(theme: Site["settings"]["theme"]) {
-  const decls = (t: Record<string, string>) =>
-    Object.entries(t)
-      .filter(([k, v]) => (themeTokens as readonly string[]).includes(k) && /^[#\w\s().,/%-]+$/.test(v))
-      .map(([k, v]) => `--${k}:${v};`)
-      .join("");
-  const light = decls(theme.light);
-  const dark = decls(theme.dark);
-  return (light ? `:root{${light}}` : "") + (dark ? `:root[data-theme="dark"]{${dark}}` : "");
-}
+export { themeCss } from "./themeCss";

@@ -1,32 +1,29 @@
 "use client";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { themeTokens, type Site } from "@/lib/content";
 import { applyOp, setIn } from "@/lib/admin";
-import { input, type Update } from "./Field";
-
-const btn = "rounded-md border border-line px-2 py-1 text-sm disabled:opacity-40";
-const box = "grid gap-3 rounded-xl border border-line p-4";
+import { btn, card, input, type Update } from "./Field";
+import { sectionNames, tokenNames } from "./labels";
 
 // Order and visibility only: ids are fixed in code.
 export function Sections({ site, update }: { site: Site; update: Update }) {
   const list = site.settings.sections;
   const set = (next: unknown[]) => update((s) => setIn(s, ["settings", "sections"], next));
   return (
-    <fieldset className={box}>
-      <legend className="px-1 font-semibold">sections</legend>
-      <p className="text-sm text-muted">Hero luôn đứng đầu. Ẩn about là ẩn luôn principles; ẩn experience là ẩn luôn education. Thứ tự mặc định khớp hành trình đêm → bình minh.</p>
+    <div className={card}>
+      <p className="text-sm text-muted">Bỏ chọn để ẩn một mục; dùng ↑ ↓ để đổi thứ tự. Hero luôn đứng đầu. Thứ tự mặc định khớp hành trình đêm → bình minh của phong cảnh.</p>
       {list.map((sec, i) => (
         <div key={sec.id} className="flex items-center gap-2">
           <label className="mr-auto flex items-center gap-2">
             <input type="checkbox" className="size-5 accent-accent" checked={sec.visible} onChange={(e) => set(list.map((x) => (x.id === sec.id ? { ...x, visible: e.target.checked } : x)))} />
-            {sec.id}
+            {sectionNames[sec.id] ?? sec.id}
           </label>
-          <button type="button" className={btn} disabled={i === 0} aria-label={`Đưa ${sec.id} lên`} onClick={() => set(applyOp(list, { type: "move", index: i, to: i - 1 }))}>↑</button>
-          <button type="button" className={btn} disabled={i === list.length - 1} aria-label={`Đưa ${sec.id} xuống`} onClick={() => set(applyOp(list, { type: "move", index: i, to: i + 1 }))}>↓</button>
+          <button type="button" className={btn} disabled={i === 0} aria-label={`Đưa ${sectionNames[sec.id] ?? sec.id} lên`} onClick={() => set(applyOp(list, { type: "move", index: i, to: i - 1 }))}>↑</button>
+          <button type="button" className={btn} disabled={i === list.length - 1} aria-label={`Đưa ${sectionNames[sec.id] ?? sec.id} xuống`} onClick={() => set(applyOp(list, { type: "move", index: i, to: i + 1 }))}>↓</button>
         </div>
       ))}
-    </fieldset>
+    </div>
   );
 }
 
@@ -41,29 +38,30 @@ export function Theme({ site, update }: { site: Site; update: Update }) {
       return setIn(s, ["settings", "theme", mode], value.trim() ? { ...rest, [token]: value } : rest);
     });
   return (
-    <fieldset className={box}>
-      <legend className="px-1 font-semibold">theme</legend>
-      <p className="text-sm text-muted">Để trống = màu mặc định. Nhận #hex, rgb(...), hsl(...).</p>
-      <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-2">
+    <div className={card}>
+      <p className="text-sm text-muted">Ô trống = dùng màu mặc định của nền sáng / nền tối. Nhận #hex, rgb(...), hsl(...). Màu phong cảnh không chỉnh ở đây.</p>
+      <div className="hidden grid-cols-[10rem_1fr_1fr] gap-2 sm:grid">
         <span />
-        <span className="text-sm text-muted">light</span>
-        <span className="text-sm text-muted">dark</span>
-        {themeTokens.map((t) => (
-          <Fragment key={t}>
-            <span className="text-sm">{t}</span>
-            {modes.map((m) => {
-              const v = site.settings.theme[m][t] ?? "";
-              return (
-                <div key={m} className="flex items-center gap-2">
-                  <span className="size-8 shrink-0 rounded border border-line" style={v ? { background: v } : undefined} aria-hidden />
-                  <input aria-label={`${t} (${m})`} className={input} placeholder="mặc định" value={v} onChange={(e) => set(m, t, e.target.value)} />
-                </div>
-              );
-            })}
-          </Fragment>
-        ))}
+        <span className="text-sm font-medium">Nền sáng</span>
+        <span className="text-sm font-medium">Nền tối</span>
       </div>
-    </fieldset>
+      {themeTokens.map((t) => (
+        // Phones: name on its own line, the two boxes below it.
+        <div key={t} className="grid grid-cols-2 items-center gap-2 sm:grid-cols-[10rem_1fr_1fr]">
+          <span className="col-span-2 text-sm sm:col-span-1">{tokenNames[t] ?? t}</span>
+          {modes.map((m) => {
+            const v = site.settings.theme[m][t] ?? "";
+            const mode = m === "light" ? "nền sáng" : "nền tối";
+            return (
+              <div key={m} className="flex min-w-0 items-center gap-2">
+                <span className="size-8 shrink-0 rounded border border-line" style={v ? { background: v } : undefined} aria-hidden />
+                <input aria-label={`${tokenNames[t] ?? t} (${mode})`} className={`${input} min-w-0`} placeholder={m === "light" ? "Sáng" : "Tối"} value={v} onChange={(e) => set(m, t, e.target.value)} />
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -81,13 +79,13 @@ export function CvUpload({ supabase, update }: { supabase: SupabaseClient; updat
     update((s) => setIn(s, ["profile", "cv"], `${bucket.getPublicUrl("cv.pdf").data.publicUrl}?v=${Date.now()}`));
   }
   return (
-    <div className={box}>
+    <div className={card}>
       <label className="grid gap-1">
-        <span className="font-semibold">Upload CV (PDF)</span>
+        <span className="text-sm font-medium">Tải CV lên (PDF)</span>
         <input type="file" accept="application/pdf" disabled={busy} onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
       </label>
-      <p className="text-sm text-muted">{busy ? "Đang tải lên…" : "File lên ngay; link ở ô cv đổi theo, bấm Lưu & xuất bản để trang dùng link mới."}</p>
-      {err && <p role="alert" className="text-sm text-red-400">{err}</p>}
+      <p className="text-sm text-muted">{busy ? "Đang tải lên…" : "File lên ngay; ô Link CV tự đổi theo. Bấm Lưu & xuất bản để trang dùng link mới."}</p>
+      {err && <p role="alert" className="text-sm text-red-700">{err}</p>}
     </div>
   );
 }
