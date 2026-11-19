@@ -5,6 +5,7 @@ import { flushSync } from "react-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Scene } from "./Film";
 import CaseStudy from "./CaseStudy";
+import { projectLook } from "@/lib/content";
 
 // One scene per project: the name is the set piece.
 export default function Projects() {
@@ -43,9 +44,7 @@ export default function Projects() {
           key={item.url} // stable across languages: a changing key remounts the scene
           id={i === 0 ? "work" : `work-${i + 1}`}
           label={item.name}
-          set={(["river", "meadow", "lone"] as const)[i % 3]}
-          time="late"
-          seed={5 + i}
+          fallback={projectLook(item.url, i)}
         >
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-muted">

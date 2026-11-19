@@ -605,8 +605,54 @@ export type SectionId = (typeof sectionIds)[number];
 // Colour tokens the admin may override per theme (see app/globals.css for the defaults).
 export const themeTokens = ["bg", "surface", "ink", "muted", "line", "accent", "on-accent", "sun", "sun-ink", "glow"] as const;
 
+// Background of each screen. `id` is the scene id, or `work:<project url>` for a project (so it
+// follows the project when the list is reordered). The layer switches hide parts of the scenery.
+export const sceneSets = ["panorama", "lake", "forest", "deep", "river", "meadow", "lone", "valleys", "sunrise"] as const;
+export const sceneTimes = ["night", "late", "predawn", "dawn"] as const;
+export const scenePalettes = ["green", "autumn", "sakura", "blue", "winter"] as const;
+export const sceneWinds = ["calm", "breeze", "strong"] as const;
+export const sceneLayers = ["trees", "grass", "drift", "mist", "flies", "moon", "stars", "aurora", "meteors"] as const;
+export type Look = {
+  id: string;
+  set: (typeof sceneSets)[number];
+  time: (typeof sceneTimes)[number];
+  palette: (typeof scenePalettes)[number];
+  wind: (typeof sceneWinds)[number];
+  seed: number;
+} & Record<(typeof sceneLayers)[number], boolean>;
+const look = (id: string, set: Look["set"], time: Look["time"], seed: number, moon = false): Look => ({
+  id, set, time, seed, palette: "green", wind: "breeze",
+  trees: true, grass: true, drift: true, mist: true, flies: true, moon, stars: true, aurora: true, meteors: true,
+});
+// A project with no saved background yet: river, meadow, lone in turn.
+export const projectLook = (url: string, i: number) => look(`work:${url}`, (["river", "meadow", "lone"] as const)[i % 3], "late", 5 + i);
+export const fixedScenes = [
+  look("top", "panorama", "night", 1, true),
+  look("about", "lake", "night", 2, true),
+  look("principles", "forest", "night", 3),
+  look("stack", "deep", "night", 4),
+  look("experience", "valleys", "predawn", 8),
+  look("education", "lake", "predawn", 9),
+  look("contact", "sunrise", "dawn", 10),
+];
+// The saved background for a screen, with anything missing or invalid taken from its default.
+export function lookFor(list: Look[], key: string, fallback?: Look): Look {
+  const d = fallback ?? fixedScenes.find((l) => l.id === key) ?? look(key, "meadow", "night", 1);
+  const l = list.find((x) => x.id === key);
+  if (!l) return d;
+  return {
+    ...l,
+    set: sceneSets.includes(l.set) ? l.set : d.set,
+    time: sceneTimes.includes(l.time) ? l.time : d.time,
+    palette: scenePalettes.includes(l.palette) ? l.palette : d.palette,
+    wind: sceneWinds.includes(l.wind) ? l.wind : d.wind,
+    seed: Number.isFinite(l.seed) ? l.seed : d.seed,
+  };
+}
+
 export const settings = {
   sections: sectionIds.map((id) => ({ id: id as SectionId, visible: true })),
+  scenery: [...fixedScenes, ...en.projects.items.map((p, i) => projectLook(p.url, i))] as Look[],
   theme: { light: {} as Record<string, string>, dark: {} as Record<string, string> },
   seo: {
     title: "Phạm Hồng Quân, Frontend Developer",

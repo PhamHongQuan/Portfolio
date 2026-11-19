@@ -23,7 +23,7 @@ export default function Hero() {
   );
 
   return (
-    <Scene id="top" label={c.name} set="panorama" time="night" seed={1} moon clock after={marquee}>
+    <Scene id="top" label={c.name} clock after={marquee}>
       <div className="flex -translate-y-[6vh] flex-col items-center text-center">
         <h1
           aria-label={c.name}

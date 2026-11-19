@@ -675,6 +675,98 @@ html.cinema {
   bottom: 0;
   fill: var(--tree-fore);
 }
+/* Layers the admin switched off for a screen (settings.scenery). display:none also stops their animation. */
+.no-trees :is(.grove, .canopy, .trunk, .pl-fore .land),
+.no-grass .meadow,
+.no-drift .drift,
+.no-mist .mist,
+.no-flies .firefly,
+.no-stars .stars,
+.no-aurora .aurora,
+.no-meteors .meteor,
+.scene[data-wind="calm"] .drift {
+  display: none;
+}
+/* Wind: calm stills grass and trees, strong speeds them up (static per scene, compositor-only). */
+.scene[data-wind="calm"] :is(.meadow, .sway) {
+  animation-play-state: paused;
+}
+.scene[data-wind="strong"] :is(.meadow, .sway) {
+  animation-duration: 2.6s;
+}
+.scene[data-wind="strong"] .meadow.wind1 {
+  animation-duration: 2.1s;
+}
+
+/* Palettes for the land (the sky keeps following the time of day). Same specificity as the
+   time-of-day rules above and later in the file, so a palette's --mtn wins over the time's. */
+:root:not([data-theme="dark"]) .scene[data-palette="autumn"] {
+  --tree: #b8642e;
+  --tree-fore: #6e3418;
+  --grass: #8a6a2a;
+  --hill: #b89a5a;
+  --leaf: #e08a3c;
+  --flower: #ffd7a0;
+  --mtn: #d9c4a0;
+}
+:root[data-theme="dark"] .scene[data-palette="autumn"] {
+  --tree: #1e0f06;
+  --tree-fore: #0a0502;
+  --grass: #120b03;
+  --hill: #3a2a12;
+  --leaf: rgb(240 170 90 / 0.8);
+  --mtn: #3a3020;
+}
+:root:not([data-theme="dark"]) .scene[data-palette="sakura"] {
+  --tree: #c76f8f;
+  --tree-fore: #7a3550;
+  --grass: #4f7a55;
+  --hill: #8fb08f;
+  --leaf: #f2a7c0;
+  --flower: #ffe3ee;
+  --mtn: #d9c6d4;
+}
+:root[data-theme="dark"] .scene[data-palette="sakura"] {
+  --tree: #1c0a12;
+  --tree-fore: #0a0307;
+  --grass: #06100a;
+  --hill: #23302a;
+  --leaf: rgb(250 180 210 / 0.8);
+  --mtn: #3a2a38;
+}
+:root:not([data-theme="dark"]) .scene[data-palette="blue"] {
+  --tree: #3f6f8a;
+  --tree-fore: #1f3f55;
+  --grass: #2f5f6a;
+  --hill: #6f9fb0;
+  --leaf: #8ec3dc;
+  --mtn: #b4cde0;
+}
+:root[data-theme="dark"] .scene[data-palette="blue"] {
+  --tree: #04101a;
+  --tree-fore: #01060b;
+  --grass: #020a10;
+  --hill: #0b2735;
+  --leaf: rgb(160 210 240 / 0.75);
+  --mtn: #15304a;
+}
+:root:not([data-theme="dark"]) .scene[data-palette="winter"] {
+  --tree: #5a6e6a;
+  --tree-fore: #2e3d3b;
+  --grass: #7d8f8a;
+  --hill: #c9d6d4;
+  --leaf: #ffffff;
+  --flower: #ffffff;
+  --mtn: #dfe8ea;
+}
+:root[data-theme="dark"] .scene[data-palette="winter"] {
+  --tree: #0c1414;
+  --tree-fore: #050909;
+  --grass: #101818;
+  --hill: #2a3638;
+  --leaf: rgb(235 245 250 / 0.8);
+  --mtn: #2f3d42;
+}
 .flower {
   fill: var(--flower);
 }
@@ -725,24 +817,26 @@ html.cinema {
     transform: skewX(1deg);
   }
 }
-/* Trees bend a little around their base. `rotate` composes with any mirroring transform. */
+/* Trees bend, they don't fly: a skew pinned to the bottom edge of the moving part (the crown's
+   base, or the ground for a grove) keeps that edge still while the top leans with the gust. */
 .sway {
+  transform-box: fill-box;
   transform-origin: 50% 100%;
   animation: tree 5.5s ease-in-out infinite;
 }
 @keyframes tree {
   0%,
   100% {
-    rotate: -1.2deg;
+    transform: skewX(calc(var(--lean, 1) * 1.5deg));
   }
   50% {
-    rotate: 3deg; /* leaning into the gust */
+    transform: skewX(calc(var(--lean, 1) * -4deg)); /* leaning into the gust */
   }
   62% {
-    rotate: 1.8deg;
+    transform: skewX(calc(var(--lean, 1) * -2.4deg));
   }
   70% {
-    rotate: 2.6deg;
+    transform: skewX(calc(var(--lean, 1) * -3.4deg));
   }
 }
 

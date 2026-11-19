@@ -27,7 +27,7 @@ export default function Contact() {
 
   return (
     // Final shot: arriving at a yellow sunrise.
-    <Scene id="contact" label={k.title} set="sunrise" time="dawn" seed={10}>
+    <Scene id="contact" label={k.title}>
       <div className="flex -translate-y-[4vh] flex-col items-center text-center">
         <h2
           id="contact-title"

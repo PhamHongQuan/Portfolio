@@ -10,7 +10,7 @@ export default function Experience() {
 
   return (
     <>
-      <Scene id="experience" label={e.title} set="valleys" time="predawn" seed={8}>
+      <Scene id="experience" label={e.title}>
         <SceneTitle title={e.title} intro={e.intro} />
         <ol className="grid gap-4 md:grid-cols-[2fr_3fr]">
           {e.jobs.map((job, i) => (
@@ -43,7 +43,7 @@ export default function Experience() {
         </ol>
       </Scene>
 
-      <Scene id="education" label={e.educationTitle} set="lake" time="predawn" seed={9}>
+      <Scene id="education" label={e.educationTitle}>
         <SceneTitle title={e.educationTitle} center />
         <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2">
           {e.education.map((ed) => (

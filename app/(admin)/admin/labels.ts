@@ -2,8 +2,27 @@
 // ("projects.items.study.did"). A field with no label falls back to its key, so new fields in
 // lib/content.ts still show up. Pure: no runtime imports (scripts/admin.test.ts runs it in node).
 
-export type SectionKind = "content" | "other" | "profile" | "order" | "theme" | "seo";
+export type SectionKind = "content" | "other" | "profile" | "order" | "scenery" | "theme" | "seo";
 export type Section = { id: string; group: string; title: string; kind: SectionKind; paths?: string[] };
+
+// Sidebar icons: SVG path data on a 24×24 stroke grid.
+export const icons: Record<string, string> = {
+  hero: "M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z",
+  about: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0",
+  principles: "M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9",
+  stack: "M12 3l9 5-9 5-9-5zM3 13l9 5 9-5",
+  projects: "M3 8h18v12H3zM8 8V5h8v3",
+  experience: "M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z",
+  education: "M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5",
+  contact: "M3 6h18v12H3zM3 6l9 7 9-7",
+  profile: "M3 5h18v14H3zM8 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5 16a3 3 0 0 1 6 0M14 9h4M14 13h4",
+  order: "M4 6h10M4 12h10M4 18h10M18 5v14M15 16l3 3 3-3",
+  scenery: "M3 19l6-9 4 6 3-4 5 7zM16 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  theme: "M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z",
+  seo: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5",
+  ui: "M4 7V5h16v2M9 19h6M12 5v14",
+  other: "M5 12h.01M12 12h.01M19 12h.01",
+};
 
 export const sections: Section[] = [
   { id: "hero", group: "Nội dung", title: "Hero", kind: "content", paths: ["name", "hero.status", "hero.role", "hero.intro", "hero.primary", "hero.secondary", "hero.stack"] },
@@ -16,6 +35,7 @@ export const sections: Section[] = [
   { id: "contact", group: "Nội dung", title: "Liên hệ & chân trang", kind: "content", paths: ["contact", "footer"] },
   { id: "profile", group: "Trang", title: "Hồ sơ & CV", kind: "profile" },
   { id: "order", group: "Trang", title: "Sắp xếp mục", kind: "order" },
+  { id: "scenery", group: "Trang", title: "Nền phong cảnh", kind: "scenery" },
   { id: "theme", group: "Trang", title: "Màu", kind: "theme" },
   { id: "seo", group: "Trang", title: "SEO", kind: "seo" },
   {
@@ -199,3 +219,36 @@ export const tokenNames: Record<string, string> = {
   "sun-ink": "Chữ vàng",
   glow: "Quầng sáng",
 };
+
+export const sceneNames: Record<string, string> = {
+  top: "Mở đầu (Hero)",
+  about: "Giới thiệu",
+  principles: "Cách làm việc",
+  stack: "Kỹ năng",
+  experience: "Kinh nghiệm",
+  education: "Học vấn",
+  contact: "Liên hệ",
+};
+
+export const setNames: Record<string, string> = {
+  panorama: "Toàn cảnh núi đồi",
+  lake: "Hồ nước",
+  forest: "Rừng thông",
+  deep: "Rừng sâu, tia nắng",
+  river: "Bờ sông",
+  meadow: "Đồng cỏ, cây lớn",
+  lone: "Vách đá, cây đơn",
+  valleys: "Thung lũng sương",
+  sunrise: "Đồi bình minh",
+};
+
+export const timeNames: Record<string, string> = { night: "Đêm", late: "Khuya", predawn: "Trước bình minh", dawn: "Bình minh" };
+
+export const paletteNames: Record<string, string> = { green: "Xanh lá (mặc định)", autumn: "Mùa thu", sakura: "Anh đào", blue: "Sương lam", winter: "Mùa đông" };
+export const windNames: Record<string, string> = { calm: "Lặng gió", breeze: "Gió nhẹ", strong: "Gió mạnh" };
+
+// Layer switches, grouped as the admin shows them.
+export const layerGroups = [
+  ["Mặt đất", { trees: "Cây tiền cảnh", grass: "Cỏ", drift: "Lá bay", mist: "Sương", flies: "Đom đóm" }],
+  ["Bầu trời", { moon: "Trăng", stars: "Sao", aurora: "Cực quang", meteors: "Sao băng" }],
+] as const;

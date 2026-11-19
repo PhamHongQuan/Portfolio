@@ -10,6 +10,7 @@ type LanguageContextType = {
   c: Content;
   profile: Site["profile"];
   sections: Site["settings"]["sections"];
+  scenery: Site["settings"]["scenery"];
 };
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
@@ -67,7 +68,7 @@ export function LanguageProvider({ site: saved, children }: { site: Site; childr
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, c: site.content[language], profile: site.profile, sections: site.settings.sections }}>
+    <LanguageContext.Provider value={{ language, setLanguage, c: site.content[language], profile: site.profile, sections: site.settings.sections, scenery: site.settings.scenery }}>
       {children}
       {draft && (
         <div className="pointer-events-none fixed bottom-3 left-1/2 z-[70] -translate-x-1/2 rounded-full bg-sun px-3 py-1 text-xs font-semibold text-black shadow">

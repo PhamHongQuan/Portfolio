@@ -1,7 +1,9 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useSyncExternalStore } from "react";
-import { Fore, Mid, SetName, starfield } from "./Landscape";
+import { Fore, Mid, starfield } from "./Landscape";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { lookFor, sceneLayers, type Look } from "@/lib/content";
 
 // Scroll distance per scene, in screen heights: it holds still for HOLD, then the camera travels for MOVE.
 // No hold (the first pixel of scroll already moves the camera); a long MOVE keeps transitions unhurried.
@@ -475,34 +477,34 @@ export default function Film({ children }: { children: ReactNode }) {
   );
 }
 
-export type Time = "night" | "late" | "predawn" | "dawn";
+export type Time = Look["time"];
 
 export function Scene({
   id,
   label,
-  set,
-  time,
-  seed,
-  moon,
+  fallback,
   clock,
   children,
   after,
 }: {
   id: string;
   label: string;
-  set: SetName;
-  time: Time;
-  seed: number;
-  moon?: boolean;
+  /** Default background when none is saved; fixed scenes find theirs in lib/content.ts by id. */
+  fallback?: Look;
   /** Sky follows the visitor's real clock (html[data-clock], lib/clock.ts) instead of `time`. */
   clock?: boolean;
   children: ReactNode;
   after?: ReactNode;
 }) {
+  const { scenery } = useLanguage();
+  const look = lookFor(scenery, fallback?.id ?? id, fallback);
+  const { set, time, seed } = look;
+  const { moon, palette, wind } = look;
+  const hide = sceneLayers.filter((k) => !look[k]).map((k) => `no-${k}`).join(" ");
   const ready = useDrawn(id);
 
   return (
-    <section id={id} aria-label={label} data-time={time} data-clock={clock ? "" : undefined} className="scene">
+    <section id={id} aria-label={label} data-time={time} data-palette={palette} data-wind={wind} data-clock={clock ? "" : undefined} className={`scene ${hide}`}>
       <div aria-hidden className="pl pl-back">
         <div className="sky" />
         {ready && (

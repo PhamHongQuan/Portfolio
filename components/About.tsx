@@ -10,7 +10,7 @@ export default function About() {
 
   return (
     <>
-      <Scene id="about" label={a.title} set="lake" time="night" seed={2} moon>
+      <Scene id="about" label={a.title}>
         <SceneTitle title={a.title} />
         <div className="grid gap-4 md:grid-cols-3">
           <div className="spot p-7 md:col-span-2 md:p-10">
@@ -32,7 +32,7 @@ export default function About() {
         </div>
       </Scene>
 
-      <Scene id="principles" label={a.principlesTitle} set="forest" time="night" seed={3}>
+      <Scene id="principles" label={a.principlesTitle}>
         <SceneTitle title={a.principlesTitle} center />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {a.principles.map((p) => (

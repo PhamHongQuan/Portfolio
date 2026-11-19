@@ -11,7 +11,7 @@ export default function Stack() {
   const [main, ...rest] = s.layers;
 
   return (
-    <Scene id="stack" label={s.title} set="deep" time="night" seed={4}>
+    <Scene id="stack" label={s.title}>
       <SceneTitle title={s.title} intro={s.intro} />
       <div className="grid gap-4 md:grid-cols-5 md:grid-rows-3">
         <article className="spot flex flex-col justify-between gap-8 border-accent! bg-accent! p-7 text-on-accent md:col-span-3 md:row-span-3 md:p-10">

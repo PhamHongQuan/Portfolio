@@ -5,8 +5,8 @@ import { content, profile, settings, type Site } from "@/lib/content";
 import { fromRows, pairUp, type Row } from "@/lib/merge";
 import { clean, getIn, setIn, validate } from "@/lib/admin";
 import Field, { input, type Update } from "./Field";
-import { leftovers, sections, type Section } from "./labels";
-import { CvUpload, Sections, Theme } from "./Extras";
+import { icons, leftovers, sections, type Section } from "./labels";
+import { CvUpload, Scenery, Sections, Theme } from "./Extras";
 import { publish } from "./actions";
 
 const defaults: Site = { content, profile, settings };
@@ -145,6 +145,7 @@ export default function Admin({ url, anonKey }: { url: string; anonKey: string }
       if (sec.kind === "profile") return { ...s, profile: defaults.profile };
       if (sec.kind === "order") return setIn(s, ["settings", "sections"], defaults.settings.sections);
       if (sec.kind === "theme") return setIn(s, ["settings", "theme"], defaults.settings.theme);
+      if (sec.kind === "scenery") return setIn(s, ["settings", "scenery"], defaults.settings.scenery);
       if (sec.kind === "seo") return setIn(s, ["settings", "seo"], defaults.settings.seo);
       return pathsOf(sec).reduce(
         (acc, p) => langs.reduce((x, l) => setIn(x, ["content", l, ...p.split(".")], getIn(defaults.content[l], p.split("."))), acc),
@@ -174,6 +175,8 @@ export default function Admin({ url, anonKey }: { url: string; anonKey: string }
     </>
   ) : sec.kind === "order" ? (
     <Sections site={site} update={update} />
+  ) : sec.kind === "scenery" ? (
+    <Scenery site={site} update={update} />
   ) : sec.kind === "theme" ? (
     <Theme site={site} update={update} />
   ) : sec.kind === "seo" ? (
@@ -222,20 +225,26 @@ export default function Admin({ url, anonKey }: { url: string; anonKey: string }
       </header>
 
       <div className={`mx-auto flex gap-6 px-4 py-6 ${preview ? "" : "max-w-6xl"}`}>
-        <nav aria-label="Mục cần sửa" className={`sticky top-20 hidden w-52 shrink-0 self-start ${preview ? "xl:block" : "md:block"}`}>
-          {groups.map((g) => (
-            <div key={g} className="mb-4">
-              <p className="mb-1 px-3 text-xs font-semibold tracking-wide text-muted uppercase">{g}</p>
-              {menu.filter((m) => m.group === g).map((m) => (
-                <button
-                  key={m.id}
-                  aria-current={m.id === sec.id ? "page" : undefined}
-                  className={`block w-full rounded-lg px-3 py-1.5 text-left text-sm ${m.id === sec.id ? "bg-accent/10 font-semibold text-accent" : "hover:bg-surface"}`}
-                  onClick={() => setSecId(m.id)}
-                >
-                  {m.title}
-                </button>
-              ))}
+        <nav aria-label="Mục cần sửa" className={`sticky top-20 hidden w-60 shrink-0 self-start rounded-xl border border-line bg-surface p-2 ${preview ? "xl:block" : "md:block"}`}>
+          {groups.map((g, gi) => (
+            <div key={g} className={gi ? "mt-2 border-t border-line pt-2" : ""}>
+              <p className="px-3 pt-1 pb-1.5 text-[11px] font-bold tracking-widest text-muted uppercase">{g}</p>
+              {menu.filter((m) => m.group === g).map((m) => {
+                const on = m.id === sec.id;
+                return (
+                  <button
+                    key={m.id}
+                    aria-current={on ? "page" : undefined}
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${on ? "bg-accent font-semibold text-on-accent shadow-sm" : "text-ink hover:bg-accent/10"}`}
+                    onClick={() => setSecId(m.id)}
+                  >
+                    <svg viewBox="0 0 24 24" className={`size-[18px] shrink-0 ${on ? "" : "text-accent"}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d={icons[m.id] ?? icons.other} />
+                    </svg>
+                    {m.title}
+                  </button>
+                );
+              })}
             </div>
           ))}
         </nav>

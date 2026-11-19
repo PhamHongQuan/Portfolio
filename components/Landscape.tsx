@@ -1,10 +1,11 @@
 import { CSSProperties, ReactNode, memo, useId } from "react";
+import type { Look } from "@/lib/content";
 
 // Landscape sets for the film. Each scene is a different place on one journey, from a far
 // panorama in at night to a sunrise close up. Everything is drawn from seeded generators, so
 // server and client render identical SVG. Colours come from CSS variables (theme + time of day).
 
-export type SetName = "panorama" | "lake" | "forest" | "deep" | "river" | "meadow" | "lone" | "valleys" | "sunrise";
+export type SetName = Look["set"];
 
 const rng = (seed: number) => {
   let s = (seed * 7919 + 104729) % 233280;
@@ -95,11 +96,12 @@ const blades = (seed: number, count: number, lo: number, hi: number, bands: [num
   return d;
 };
 
-// Broadleaf tree: a trunk and a crown of overlapping circles.
+// Broadleaf tree: a trunk and a crown of overlapping circles. The crown sits high enough
+// that about a third of the trunk shows below it.
 const broadleaf = (seed: number, x: number, base: number, h: number) => {
   const r = rng(seed + 43);
-  const crownY = base - h * 0.62;
-  const R = h * 0.26;
+  const crownY = base - h * 0.7;
+  const R = h * 0.24;
   const crown = Array.from({ length: 9 }, (_, i) => {
     const a = (i / 9) * Math.PI * 2;
     return { cx: x + Math.cos(a) * R * (0.7 + r() * 0.4), cy: crownY + Math.sin(a) * R * 0.6 * (0.7 + r() * 0.4), r: R * (0.55 + r() * 0.3) };
@@ -123,21 +125,25 @@ const Land = ({ d, style, fill, box = "0 0 1000 300", extra }: { d: string; styl
   </svg>
 );
 const Tree = ({ t, style, fill = "var(--tree)", sway }: { t: ReturnType<typeof broadleaf>; style: CSSProperties; fill?: string; sway?: boolean }) => (
-  <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMax meet" className={`land ${sway ? "sway" : ""}`} style={{ ...style, fill }}>
+  <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMax meet" className="land" style={{ ...style, fill }}>
     <path d={t.trunk} />
-    {t.crown.map((c, i) => (
-      <circle key={i} cx={rd(c.cx)} cy={rd(c.cy)} r={rd(c.r)} />
-    ))}
+    {/* Only the crown moves in the wind; the trunk stays planted. */}
+    <g className={sway ? "sway" : undefined}>
+      {t.crown.map((c, i) => (
+        <circle key={i} cx={rd(c.cx)} cy={rd(c.cy)} r={rd(c.r)} />
+      ))}
+    </g>
   </svg>
 );
 const Grove = ({ seed, side, height, count = 6, lo = 170, hi = 400 }: { seed: number; side: "left" | "right"; height: string; count?: number; lo?: number; hi?: number }) => (
   <svg
     viewBox="0 0 400 400"
     preserveAspectRatio="xMinYMax meet"
-    className="grove sway"
-    style={{ height, width: `calc(${height} * 0.75)`, [side]: "-3%", transform: side === "right" ? "scaleX(-1)" : undefined }}
+    className="grove"
+    // --lean flips the bend back on the mirrored side so both groves lean with the same wind.
+    style={{ height, width: `calc(${height} * 0.75)`, [side]: "-3%", ...(side === "right" && { transform: "scaleX(-1)", "--lean": -1 }) } as CSSProperties}
   >
-    <path d={grove(seed + (side === "right" ? 5 : 0), count, lo, hi)} />
+    <path className="sway" d={grove(seed + (side === "right" ? 5 : 0), count, lo, hi)} />
   </svg>
 );
 // Grass in three layers that each catch the wind on their own beat, so the meadow ripples.
@@ -378,7 +384,7 @@ export const Fore = memo(function Fore({ set, seed }: { set: SetName; seed: numb
     ),
     meadow: (
       <>
-        <Tree t={broadleaf(seed + 2, 220, 600, 560)} style={{ bottom: 0, height: "78%", left: "-12%", width: "60%" }} fill="var(--tree-fore)" sway />
+        <Tree t={broadleaf(seed + 2, 220, 600, 560)} style={{ bottom: "5vh", height: "78%", left: "-12%", width: "60%" }} fill="var(--tree-fore)" sway />
         <Grass
           b={[seed, 240, 30, 100]}
           height="13vh"
