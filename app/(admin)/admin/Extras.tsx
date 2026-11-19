@@ -3,22 +3,24 @@ import { useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { themeTokens, type Site } from "@/lib/content";
 import { applyOp, setIn } from "@/lib/admin";
-import { btn, card, input, type Update } from "./Field";
+import { btn, card, input, useSort, type Update } from "./Field";
 import { sectionNames, tokenNames } from "./labels";
 
 // Order and visibility only: ids are fixed in code.
 export function Sections({ site, update }: { site: Site; update: Update }) {
   const list = site.settings.sections;
   const set = (next: unknown[]) => update((s) => setIn(s, ["settings", "sections"], next));
+  const sort = useSort((index, to) => set(applyOp(list, { type: "move", index, to })));
   return (
     <div className={card}>
-      <p className="text-sm text-muted">Bỏ chọn để ẩn một mục; dùng ↑ ↓ để đổi thứ tự. Hero luôn đứng đầu. Thứ tự mặc định khớp hành trình đêm → bình minh của phong cảnh.</p>
+      <p className="text-sm text-muted">Bỏ chọn để ẩn một mục; kéo ⠿ hoặc dùng ↑ ↓ để đổi thứ tự. Hero luôn đứng đầu. Thứ tự mặc định khớp hành trình đêm → bình minh của phong cảnh.</p>
       {list.map((sec, i) => (
-        <div key={sec.id} className="flex items-center gap-2">
+        <div key={sec.id} {...sort.row(i)} className={`flex items-center gap-2 rounded-lg ${sort.rowClass(i)}`}>
           <label className="mr-auto flex items-center gap-2">
             <input type="checkbox" className="size-5 accent-accent" checked={sec.visible} onChange={(e) => set(list.map((x) => (x.id === sec.id ? { ...x, visible: e.target.checked } : x)))} />
             {sectionNames[sec.id] ?? sec.id}
           </label>
+          <span {...sort.handle(i)}>⠿</span>
           <button type="button" className={btn} disabled={i === 0} aria-label={`Đưa ${sectionNames[sec.id] ?? sec.id} lên`} onClick={() => set(applyOp(list, { type: "move", index: i, to: i - 1 }))}>↑</button>
           <button type="button" className={btn} disabled={i === list.length - 1} aria-label={`Đưa ${sectionNames[sec.id] ?? sec.id} xuống`} onClick={() => set(applyOp(list, { type: "move", index: i, to: i + 1 }))}>↓</button>
         </div>
