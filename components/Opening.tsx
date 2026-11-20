@@ -5,7 +5,7 @@ import Logo from "./Logo";
 
 // html[data-opening] is set by the <head> script (lib/headScript.ts). Without JS it is never set, so
 // the opening never shows and the page scrolls as usual.
-const MIN_MS = 900; // long enough to read as an intro, not a flash
+const MIN_MS = 2100; // long enough for the Q to finish drawing (see .opening-logo in globals.css)
 const MAX_MS = 8000; // never keep a visitor on a slow network waiting forever
 
 /**
@@ -73,7 +73,16 @@ export default function Opening() {
   return (
     <div aria-hidden className="opening" data-leaving={leaving ? "" : undefined}>
       <div className="opening-inner">
-        <Logo className="h-16" priority />
+        {/* The Q is traced line by line (ring, inner ring, swoosh, tail), then the real logo fills in. */}
+        <div className="opening-logo">
+          <svg viewBox="0 0 335 256" aria-hidden>
+            <ellipse pathLength={1} cx="141" cy="128" rx="124" ry="136" transform="rotate(-90 141 128)" />
+            <ellipse pathLength={1} cx="142" cy="110" rx="83" ry="63" transform="rotate(180 142 110)" />
+            <path pathLength={1} d="M4 244 Q2 126 334 47 Q2 172 4 244 Z" />
+            <path pathLength={1} d="M122 170 L186 170 L260 256 L196 256 Z" />
+          </svg>
+          <Logo className="h-20" priority />
+        </div>
         <span className="opening-bar">
           <i />
         </span>
