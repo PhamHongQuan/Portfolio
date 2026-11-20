@@ -1,10 +1,10 @@
 // Same in every language. Leave a field empty ("") and the page hides it.
 export const profile = {
   email: "quan54877@gmail.com",
-  phone: "0364 543 7696", // TODO: 11 digits, Vietnamese mobile numbers have 10. Check it.
-  phoneHref: "tel:03645437696",
+  phone: "0364 537 696",
+  phoneHref: "tel:0364537696",
   site: "https://hquanpham.id.vn",
-  github: "", // e.g. "https://github.com/username"
+  github: "https://github.com/PhamHongQuan",
   linkedin: "", // e.g. "https://www.linkedin.com/in/username"
   cv: "", // put the PDF in /public, then set "/cv.pdf"
 };
@@ -44,17 +44,18 @@ const en = {
     status: "Open to new roles and projects",
     role: "Frontend developer",
     intro:
-      "I turn designs into fast, responsive interfaces with React, Next.js and Tailwind CSS, and I know the backend well enough to wire them to real APIs.",
+      "I build frontends at Foxscore. Before that I spent over a year as a fullstack developer at Rada360, writing both the Next.js UI and the Laravel API for an AI chatbot platform.",
     primary: "Get in touch",
     secondary: "Download CV",
     stack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "JavaScript", "Figma", "AI coding agents", "REST APIs", "Laravel", "MySQL", "Docker", "Git"],
   },
   about: {
     title: "About",
-    lead: "I care about interfaces that feel fast and stay easy to change.",
+    lead: "A year and a bit of fullstack, now focused on the frontend.",
     body: [
-      "I work on the frontend at Foxscore, turning designs into responsive, production-ready interfaces and connecting them to the APIs behind them.",
-      "Before that I spent a year as a fullstack developer at Rada360, building Laravel APIs for an AI chatbot platform and a booking system. That backend time is why my frontends talk to APIs cleanly.",
+      "Since Feb 2026 I've been a frontend developer at Foxscore.",
+      "At Rada360 I built an admin CMS with Laravel 12 and Next.js, then moved to AI360: a chatbot that answers customers on Zalo, Messenger and Telegram. I wired up each platform's API, put the webhooks on queues and built the admin panel in Filament.",
+      "On the side I make small tools that run entirely in the browser (reordering and signing PDFs, converting images) and a template marketplace in Laravel and Next.js.",
     ],
     stats: [
       { value: 2, label: "Years building production web apps" },
@@ -63,26 +64,26 @@ const en = {
     principlesTitle: "How I work",
     principles: [
       {
-        title: "Match the design, then go further",
-        text: "Spacing, type and states taken straight from Figma, plus the hover, focus, loading and empty states a mockup forgets.",
+        title: "Build every state",
+        text: "A Figma file usually shows the happy path. I add loading, errors, empty lists and keyboard focus.",
       },
       {
-        title: "Measure, then optimize",
-        text: "I check what the browser is actually doing before changing anything, so fixes land where the time goes.",
+        title: "Measure before fixing",
+        text: "This portfolio used to stutter on old laptops. I measured each frame to find where the time went, then added a lighter mode that turns on when a machine can't keep up.",
       },
       {
-        title: "Readable first",
-        text: "Small components, clear names, no clever tricks. Code gets read far more than it gets written.",
+        title: "Don't ship a broken file",
+        text: "Folio and the PDF signer read back the file they export and compare it with the original. One page off and the download is blocked.",
       },
       {
-        title: "AI agents in the loop",
-        text: "I work with AI coding agents for scaffolding, refactors and reviews, with clear instructions and a read of every line they change.",
+        title: "AI agents, my own review",
+        text: "I hand scaffolding and refactors to AI coding agents, then read every change myself before merging.",
       },
     ],
   },
   stack: {
     title: "Where I work in the stack",
-    intro: "Frontend first, with enough backend to wire it up properly.",
+    intro: "Frontend is the main job. I spent over a year on the backend, so I can still write the API when a feature needs it.",
     layers: [
       {
         name: "Interface",
@@ -99,7 +100,7 @@ const en = {
       {
         name: "Async",
         level: "Familiar",
-        text: "Webhooks and queued jobs from my Rada360 work, so I know what the UI should do while the server is still busy.",
+        text: "Webhooks from Zalo OA, Messenger and Telegram at AI360, processed on queues, so I know what the UI should show while the server is still busy.",
         tools: ["Webhooks", "Queues"],
       },
       {
@@ -124,18 +125,17 @@ const en = {
         name: "Rada360",
         kind: "Booking system",
         year: "2025",
-        description:
-          "Turned Figma designs into responsive booking pages and wired them to the APIs for services, time slots and bookings.",
-        stack: ["Tailwind CSS", "JavaScript", "REST API"],
+        description: "Booking pages and an admin CMS: a Next.js, React and TypeScript frontend on a Laravel 12 API.",
+        stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Laravel"],
         url: "https://rada360.com",
         study: {
           role: "Frontend and API developer",
           context: "A booking system: customers pick a service, choose a free time slot and book it.",
           did: [
-            "Turned the Figma designs into responsive booking pages with Tailwind CSS and JavaScript",
-            "Wired the pages to the APIs for services, time slots and bookings",
-            "Designed and built the REST API behind the booking system in Laravel",
-            "Documented and tested the API with Swagger and Postman",
+            "Turned the Figma designs into responsive booking pages with Next.js, React, TypeScript and Tailwind CSS",
+            "Wired the pages to the APIs for services, time slots and bookings with Axios",
+            "Built the admin CMS in Laravel 12 with Controller – Service – Repository: CRUD, validation, search, filters, pagination",
+            "Designed the MySQL tables and Eloquent relations; documented and tested the API with Swagger and Postman",
           ],
           outcome: "In production at rada360.com, used by real customers.",
         },
@@ -145,18 +145,18 @@ const en = {
         kind: "SaaS AI chatbot platform",
         year: "2025",
         description:
-          "Fullstack work on a chatbot platform for Facebook, Zalo, Telegram and websites: the training system, the REST API, webhook processing and a referral program.",
-        stack: ["Laravel", "REST API", "MySQL", "JavaScript"],
+          "An AI chatbot that answers customers on Zalo, Messenger, Telegram and websites: REST API, Filament admin, webhooks on queues.",
+        stack: ["Laravel", "Filament", "MySQL", "Queue", "Tailwind CSS"],
         url: "https://ai.rada360.com",
         study: {
           role: "Fullstack developer",
           context: "A SaaS platform for AI chatbots that answer customers on Facebook, Zalo, Telegram and websites.",
           did: [
-            "Built the chatbot training system and the REST API behind the platform",
-            "Processed the incoming webhooks from each messaging platform",
+            "Built a layered REST API with a service layer that keeps business logic out of controllers",
+            "Integrated the AI Core API for chatbot training and conversation flows",
+            "Connected Zalo Official Account, Facebook Messenger and the Telegram Bot API so the bot receives and answers messages",
             "Moved webhook handling and outgoing messages onto queues, cutting response times",
-            "Introduced a service layer to keep business logic out of controllers, easier to maintain and test",
-            "Built the referral program",
+            "Admin panel in Filament; Google OAuth and reCAPTCHA; a referral program",
           ],
           outcome: "Live at ai.rada360.com.",
         },
@@ -224,6 +224,26 @@ const en = {
         },
       },
       {
+        name: "Template Market",
+        kind: "Template marketplace",
+        year: "2026",
+        description: "Publish, share and sell templates: a Laravel 12 API, a Next.js frontend, files stored on AWS S3.",
+        stack: ["Next.js", "TypeScript", "TanStack Query", "Zustand", "Laravel", "MySQL", "AWS S3"],
+        url: "https://github.com/PhamHongQuan/Template-Market",
+        study: {
+          role: "Fullstack, personal project",
+          context: "A marketplace where people manage, share and buy templates, with a cart and orders.",
+          did: [
+            "Laravel 12 API with Controller – Service – Repository, MySQL with Eloquent relations",
+            "Next.js, React and TypeScript frontend; Axios with TanStack Query for data, Zustand for state",
+            "JWT auth; templates, categories, cart, orders and user profiles",
+            "Thumbnail, preview and source uploads to AWS S3",
+            "Docker for the dev environment, Swagger for API docs",
+          ],
+          outcome: "In progress. Source on GitHub.",
+        },
+      },
+      {
         name: "This portfolio",
         kind: "Personal site",
         year: "2026",
@@ -259,32 +279,32 @@ const en = {
         stack: [] as string[],
       },
       {
-        period: "Dec 2024 – Jan 2026",
-        role: "Fullstack PHP Developer",
+        period: "Dec 2024 – Feb 2026",
+        role: "Fullstack Developer",
         org: "Rada360 Technology JSC",
         meta: "Full-time, Ho Chi Minh City",
         points: [
-          "Turned Figma designs into responsive pages with Tailwind CSS and JavaScript, connected to the APIs behind them",
-          "Designed and built the REST API for the booking system and AI chatbot",
-          "Introduced a service layer to keep business logic out of controllers, making code easier to maintain and test",
-          "Moved webhook handling and outgoing messages onto queues, cutting response times",
-          "Documented and tested APIs with Swagger and Postman; set up Docker for local and dev environments",
+          "Rada360: admin CMS in Laravel 12 with Controller – Service – Repository, and a Next.js, React and TypeScript UI with search, filters and pagination",
+          "AI360: REST API for the chatbot platform, an admin panel in Filament, and an AI Core API integration for conversation flows",
+          "Connected the chatbot to Zalo Official Account, Facebook Messenger and Telegram; webhooks and outgoing messages run on queues",
+          "Google OAuth sign-in and reCAPTCHA against spam",
+          "Worked with BA and QA from requirements through testing and release; documented APIs in Swagger, ran dev environments in Docker",
         ],
-        stack: ["Tailwind CSS", "JavaScript", "Laravel", "MySQL", "Docker", "Swagger"],
+        stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Laravel", "MySQL", "Filament", "Docker"],
       },
     ],
     educationTitle: "Education",
     education: [
       {
-        period: "Sep 2021 – Dec 2025",
+        period: "Sep 2021 – May 2026",
         title: "Information Technology",
         org: "Nong Lam University, Ho Chi Minh City",
         note: "GPA 3.25 / 4. ReactJS, Java (Spring Boot), PHP (Laravel), database systems.",
       },
       {
-        period: "Dec 2024",
+        period: "Sep 2024",
         title: "TOEIC 590",
-        org: "ETS",
+        org: "IIG Vietnam",
         note: "Comfortable reading English technical documentation.",
       },
     ],
@@ -296,7 +316,7 @@ const en = {
     location: "Ho Chi Minh City, Vietnam",
   },
   footer: {
-    tagline: "Frontend developer building fast, responsive interfaces.",
+    tagline: "Frontend developer in Ho Chi Minh City.",
     rights: "All rights reserved.",
   },
 };
@@ -338,17 +358,18 @@ const vi: Content = {
     status: "Sẵn sàng cho vị trí và dự án mới",
     role: "Lập trình viên Frontend",
     intro:
-      "Tôi biến thiết kế thành giao diện nhanh, responsive với React, Next.js và Tailwind CSS, và hiểu backend đủ để kết nối chúng với API thật.",
+      "Tôi làm frontend ở Foxscore. Trước đó tôi làm fullstack hơn một năm ở Rada360, viết cả giao diện Next.js lẫn API Laravel cho một nền tảng chatbot AI.",
     primary: "Liên hệ với tôi",
     secondary: "Tải CV",
     stack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "JavaScript", "Figma", "AI coding agents", "REST APIs", "Laravel", "MySQL", "Docker", "Git"],
   },
   about: {
     title: "Giới thiệu",
-    lead: "Tôi quan tâm đến những giao diện chạy nhanh và dễ thay đổi.",
+    lead: "Hơn một năm làm fullstack, giờ tập trung vào frontend.",
     body: [
-      "Hiện tôi làm frontend tại Foxscore, chuyển thiết kế thành giao diện responsive sẵn sàng cho production và kết nối với API phía sau.",
-      "Trước đó tôi làm fullstack một năm tại Rada360, xây dựng API Laravel cho nền tảng chatbot AI và hệ thống đặt lịch. Nhờ khoảng thời gian làm backend đó, frontend của tôi làm việc với API gọn gàng hơn.",
+      "Từ 02/2026 tôi làm frontend ở Foxscore.",
+      "Ở Rada360 tôi làm trang quản trị bằng Laravel 12 và Next.js, rồi chuyển sang AI360: chatbot trả lời khách trên Zalo, Messenger và Telegram. Tôi nối API của từng nền tảng, đưa webhook vào queue và làm trang quản trị bằng Filament.",
+      "Ngoài giờ tôi làm mấy công cụ chạy hoàn toàn trên trình duyệt (sắp xếp và ký PDF, đổi định dạng ảnh) và một marketplace template bằng Laravel và Next.js.",
     ],
     stats: [
       { value: 2, label: "Năm xây dựng ứng dụng web production" },
@@ -357,26 +378,26 @@ const vi: Content = {
     principlesTitle: "Cách tôi làm việc",
     principles: [
       {
-        title: "Đúng thiết kế, rồi làm tốt hơn",
-        text: "Khoảng cách, chữ và trạng thái lấy đúng từ Figma, cộng thêm hover, focus, loading và trạng thái rỗng mà bản mockup hay bỏ quên.",
+        title: "Làm đủ các trạng thái",
+        text: "Bản Figma thường chỉ vẽ lúc mọi thứ ổn. Tôi làm thêm loading, lỗi, danh sách rỗng và focus bàn phím.",
       },
       {
-        title: "Đo trước, tối ưu sau",
-        text: "Tôi xem trình duyệt thực sự đang làm gì trước khi sửa, để công sức đặt đúng chỗ tốn thời gian.",
+        title: "Đo rồi mới sửa",
+        text: "Portfolio này từng giật trên máy yếu. Tôi đo từng frame để tìm chỗ tốn thời gian, rồi thêm một bản nhẹ tự bật khi máy không kéo nổi.",
       },
       {
-        title: "Dễ đọc trước tiên",
-        text: "Component nhỏ, tên rõ ràng, không mẹo vặt. Code được đọc nhiều hơn được viết.",
+        title: "Không để file sai lọt ra",
+        text: "Folio và Ký PDF đọc lại file xuất ra và so với file gốc. Lệch một trang là chặn tải.",
       },
       {
-        title: "Làm việc cùng AI agent",
-        text: "Tôi dùng AI coding agent để dựng khung, refactor và review, với chỉ dẫn rõ ràng và đọc lại từng dòng chúng thay đổi.",
+        title: "Dùng AI agent, tự đọc diff",
+        text: "Tôi giao cho AI coding agent phần dựng khung và refactor, rồi tự đọc từng thay đổi trước khi merge.",
       },
     ],
   },
   stack: {
     title: "Tôi mạnh ở tầng nào",
-    intro: "Frontend là chính, cùng đủ backend để kết nối mọi thứ cho đúng.",
+    intro: "Frontend là việc chính. Backend tôi đã làm hơn một năm, nên vẫn tự viết API được khi cần.",
     layers: [
       {
         name: "Giao diện",
@@ -393,7 +414,7 @@ const vi: Content = {
       {
         name: "Bất đồng bộ",
         level: "Đã làm",
-        text: "Webhook và queue từ thời làm ở Rada360, nên tôi biết giao diện nên hiển thị gì khi server còn đang xử lý.",
+        text: "Webhook từ Zalo OA, Messenger và Telegram ở AI360, xử lý qua queue, nên tôi biết giao diện nên hiển thị gì khi server còn đang xử lý.",
         tools: ["Webhook", "Queue"],
       },
       {
@@ -418,18 +439,17 @@ const vi: Content = {
         name: "Rada360",
         kind: "Hệ thống đặt lịch",
         year: "2025",
-        description:
-          "Chuyển thiết kế Figma thành các trang đặt lịch responsive và tích hợp API cho dịch vụ, khung giờ và đặt lịch.",
-        stack: ["Tailwind CSS", "JavaScript", "REST API"],
+        description: "Trang đặt lịch và trang quản trị: giao diện Next.js, React, TypeScript, API và CMS bằng Laravel 12.",
+        stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Laravel"],
         url: "https://rada360.com",
         study: {
           role: "Frontend và API",
           context: "Hệ thống đặt lịch: khách chọn dịch vụ, chọn khung giờ còn trống rồi đặt lịch.",
           did: [
-            "Chuyển thiết kế Figma thành các trang đặt lịch responsive với Tailwind CSS và JavaScript",
-            "Kết nối các trang với API dịch vụ, khung giờ và đặt lịch",
-            "Thiết kế và xây dựng REST API cho hệ thống đặt lịch bằng Laravel",
-            "Tài liệu hoá và kiểm thử API bằng Swagger và Postman",
+            "Chuyển thiết kế Figma thành các trang đặt lịch responsive với Next.js, React, TypeScript và Tailwind CSS",
+            "Kết nối các trang với API dịch vụ, khung giờ và đặt lịch qua Axios",
+            "Làm trang quản trị bằng Laravel 12 theo Controller – Service – Repository: CRUD, validation, tìm kiếm, lọc, phân trang",
+            "Thiết kế bảng MySQL và quan hệ bằng Eloquent; tài liệu và kiểm thử API bằng Swagger và Postman",
           ],
           outcome: "Đang chạy production tại rada360.com, có khách hàng thật sử dụng.",
         },
@@ -438,19 +458,18 @@ const vi: Content = {
         name: "AI360",
         kind: "Nền tảng SaaS chatbot AI",
         year: "2025",
-        description:
-          "Làm fullstack cho nền tảng chatbot trên Facebook, Zalo, Telegram và website: hệ thống training, RESTful API, xử lý webhook và chương trình referral.",
-        stack: ["Laravel", "REST API", "MySQL", "JavaScript"],
+        description: "Chatbot AI trả lời khách trên Zalo, Messenger, Telegram và website: REST API, trang quản trị Filament, webhook qua queue.",
+        stack: ["Laravel", "Filament", "MySQL", "Queue", "Tailwind CSS"],
         url: "https://ai.rada360.com",
         study: {
           role: "Fullstack",
           context: "Nền tảng SaaS chatbot AI trả lời khách hàng trên Facebook, Zalo, Telegram và website.",
           did: [
-            "Xây dựng hệ thống training chatbot và REST API của nền tảng",
-            "Xử lý webhook gửi đến từ từng nền tảng nhắn tin",
+            "Xây dựng REST API theo kiến trúc nhiều tầng, service layer tách business logic khỏi controller",
+            "Tích hợp AI Core API cho hệ thống training và luồng hội thoại của chatbot",
+            "Nối Zalo Official Account, Facebook Messenger và Telegram Bot API để chatbot nhận và trả lời tin nhắn",
             "Đưa xử lý webhook và gửi tin nhắn sang queue, giảm thời gian phản hồi",
-            "Xây dựng service layer tách business logic khỏi controller, dễ bảo trì và kiểm thử hơn",
-            "Xây dựng chương trình referral",
+            "Trang quản trị bằng Filament; đăng nhập Google OAuth và reCAPTCHA; chương trình referral",
           ],
           outcome: "Đang chạy tại ai.rada360.com.",
         },
@@ -518,6 +537,26 @@ const vi: Content = {
         },
       },
       {
+        name: "Template Market",
+        kind: "Marketplace template",
+        year: "2026",
+        description: "Nơi đăng, chia sẻ và mua bán template: Laravel 12 làm API, Next.js làm giao diện, file lưu trên AWS S3.",
+        stack: ["Next.js", "TypeScript", "TanStack Query", "Zustand", "Laravel", "MySQL", "AWS S3"],
+        url: "https://github.com/PhamHongQuan/Template-Market",
+        study: {
+          role: "Fullstack, dự án cá nhân",
+          context: "Một marketplace nơi người dùng quản lý, chia sẻ và mua bán template, có giỏ hàng và đơn hàng.",
+          did: [
+            "API bằng Laravel 12 theo Controller – Service – Repository, MySQL với quan hệ Eloquent",
+            "Giao diện Next.js, React, TypeScript; gọi API bằng Axios và TanStack Query, state bằng Zustand",
+            "Xác thực bằng JWT; quản lý template, danh mục, giỏ hàng, đơn hàng và hồ sơ người dùng",
+            "Upload thumbnail, bản preview và source lên AWS S3",
+            "Môi trường dev bằng Docker, tài liệu API bằng Swagger",
+          ],
+          outcome: "Đang phát triển. Mã nguồn trên GitHub.",
+        },
+      },
+      {
         name: "Portfolio này",
         kind: "Website cá nhân",
         year: "2026",
@@ -553,32 +592,32 @@ const vi: Content = {
         stack: [],
       },
       {
-        period: "12/2024 – 01/2026",
-        role: "Lập trình viên PHP Fullstack",
+        period: "12/2024 – 02/2026",
+        role: "Lập trình viên Fullstack",
         org: "Công ty Công nghệ Rada360",
         meta: "Toàn thời gian, TP. Hồ Chí Minh",
         points: [
-          "Chuyển thiết kế Figma thành giao diện responsive với Tailwind CSS và JavaScript, kết nối với API phía sau",
-          "Thiết kế và phát triển RESTful API cho hệ thống đặt lịch và chatbot AI",
-          "Xây dựng service layer tách business logic khỏi controller, dễ bảo trì và kiểm thử hơn",
-          "Đưa xử lý webhook và gửi tin nhắn sang queue, giảm thời gian phản hồi",
-          "Tài liệu hóa và kiểm thử API bằng Swagger và Postman; dựng Docker cho môi trường local và dev",
+          "Rada360: trang quản trị bằng Laravel 12 theo Controller – Service – Repository, giao diện Next.js, React, TypeScript có tìm kiếm, lọc và phân trang",
+          "AI360: REST API cho nền tảng chatbot, trang quản trị bằng Filament, tích hợp AI Core API cho luồng hội thoại",
+          "Nối chatbot với Zalo Official Account, Facebook Messenger và Telegram; webhook và gửi tin chạy qua queue",
+          "Đăng nhập bằng Google OAuth, chống spam bằng reCAPTCHA",
+          "Làm cùng BA và QA từ phân tích yêu cầu đến kiểm thử và triển khai; tài liệu API bằng Swagger, môi trường dev bằng Docker",
         ],
-        stack: ["Tailwind CSS", "JavaScript", "Laravel", "MySQL", "Docker", "Swagger"],
+        stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Laravel", "MySQL", "Filament", "Docker"],
       },
     ],
     educationTitle: "Học vấn",
     education: [
       {
-        period: "09/2021 – 12/2025",
+        period: "09/2021 – 05/2026",
         title: "Công nghệ Thông tin",
         org: "Đại học Nông Lâm TP.HCM",
         note: "GPA 3.25 / 4. ReactJS, Java (Spring Boot), PHP (Laravel), hệ quản trị cơ sở dữ liệu.",
       },
       {
-        period: "12/2024",
+        period: "09/2024",
         title: "TOEIC 590",
-        org: "ETS",
+        org: "IIG Việt Nam",
         note: "Đọc tốt tài liệu kỹ thuật tiếng Anh.",
       },
     ],
@@ -590,7 +629,7 @@ const vi: Content = {
     location: "TP. Hồ Chí Minh, Việt Nam",
   },
   footer: {
-    tagline: "Lập trình viên frontend xây giao diện nhanh và responsive.",
+    tagline: "Lập trình viên frontend ở TP. Hồ Chí Minh.",
     rights: "Bảo lưu mọi quyền.",
   },
 };
