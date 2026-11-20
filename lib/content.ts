@@ -700,7 +700,7 @@ export const settings = {
   seo: {
     title: "Phạm Hồng Quân, Frontend Developer",
     description:
-      "Frontend developer building fast, responsive interfaces with React, Next.js and Tailwind CSS, with enough backend to wire them to real APIs.",
+      "Frontend developer at Foxscore in Ho Chi Minh City, working in React, Next.js and TypeScript. Previously fullstack at Rada360, building a Laravel API and Next.js UI for an AI chatbot platform.",
     keywords: ["Frontend Developer", "React", "Next.js", "TypeScript", "Tailwind CSS", "REST API", "Laravel"],
   },
 };

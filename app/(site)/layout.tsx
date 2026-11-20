@@ -31,8 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords,
     authors: [{ name: content.en.name }],
-    alternates: { canonical: "/" },
-    openGraph: { title, description, type: "profile", url: "/" },
+    alternates: { canonical: "/", types: { "text/markdown": "/llms.txt" } },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+    openGraph: { title, description, type: "profile", url: "/", siteName: content.en.name, locale: "en_US", alternateLocale: ["vi_VN"] },
     twitter: { card: "summary_large_image", title, description },
   };
 }
@@ -40,16 +41,42 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const site = await getSite();
   const { profile, content, settings } = site;
+  // Google's ProfilePage markup: the page is about one Person. The first job is the current one.
+  const c = content.en;
+  const person = `${profile.site}/#person`;
+  const job = c.experience.jobs[0];
+  const school = c.experience.education[0];
   const personLd = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    name: content.en.name,
-    jobTitle: content.en.hero.role,
-    url: profile.site,
-    email: `mailto:${profile.email}`,
-    address: { "@type": "PostalAddress", addressLocality: "Ho Chi Minh City", addressCountry: "VN" },
-    knowsAbout: content.en.hero.stack,
-    sameAs: [profile.github, profile.linkedin].filter(Boolean),
+    "@graph": [
+      { "@type": "WebSite", "@id": `${profile.site}/#website`, url: profile.site, name: c.name, inLanguage: ["en", "vi"], publisher: { "@id": person } },
+      {
+        "@type": "ProfilePage",
+        "@id": `${profile.site}/#profile`,
+        url: profile.site,
+        name: settings.seo.title,
+        description: settings.seo.description,
+        isPartOf: { "@id": `${profile.site}/#website` },
+        mainEntity: { "@id": person },
+      },
+      {
+        "@type": "Person",
+        "@id": person,
+        name: c.name,
+        alternateName: "Hong Quan Pham",
+        jobTitle: c.hero.role,
+        description: c.hero.intro,
+        url: profile.site,
+        image: `${profile.site}/logo.png`,
+        email: `mailto:${profile.email}`,
+        address: { "@type": "PostalAddress", addressLocality: "Ho Chi Minh City", addressCountry: "VN" },
+        ...(job && { worksFor: { "@type": "Organization", name: job.org } }),
+        ...(school && { alumniOf: { "@type": "CollegeOrUniversity", name: school.org } }),
+        knowsAbout: c.hero.stack,
+        knowsLanguage: ["vi", "en"],
+        sameAs: [profile.github, profile.linkedin].filter(Boolean),
+      },
+    ],
   };
   const theme = themeCss(settings.theme);
 
