@@ -243,7 +243,9 @@ export default function Film({ children }: { children: ReactNode }) {
         const shown = enter < 1 && leave < 1;
         // The neighbour about to come in is painted ahead of time (invisible), so its first frame
         // is ready when the camera starts moving. Skipped in the light version to save memory.
-        const warm = !shown && !light && v > -SEG - 0.1 && v < SEG + 0.1;
+        // Not while skipping either: each cut would promote three scenes' planes at once, which is
+        // what got the tab killed for memory on phones.
+        const warm = !shown && !light && !root.classList.contains("skipping") && v > -SEG - 0.1 && v < SEG + 0.1;
         const state = shown ? "live" : warm ? "warm" : "off";
         if (shown || warm) draw(el.id);
         const prev = last[i];
@@ -320,9 +322,11 @@ export default function Film({ children }: { children: ReactNode }) {
       render(p);
     };
     // While skipping, each new scene is pulled into the frame like film through a projector gate.
+    // Translate only: a filter here renders every plane into one offscreen buffer per kick, and
+    // mobile Safari kills the tab for the memory ("a problem repeatedly occurred").
     const screen = film.querySelector<HTMLElement>(".screen")!;
     const kick = (dir: number) =>
-      screen.animate([{ translate: `0 ${dir * 9}%`, filter: "brightness(1.25)" }, { translate: "0 0", filter: "none" }], {
+      screen.animate([{ translate: `0 ${dir * 9}%` }, { translate: "0 0" }], {
         duration: 90,
         easing: "cubic-bezier(.2,.8,.2,1)",
       });
@@ -381,7 +385,7 @@ export default function Film({ children }: { children: ReactNode }) {
       scrollTo({ top: dest, behavior: "smooth" });
       skipping = false;
       await wait(900); // ponytail: fixed wait for the glide; scrollend once Safari has it everywhere
-      root.style.scrollSnapType = "";
+      if (!skipping) root.style.scrollSnapType = ""; // a newer skip owns it now
     };
 
     // Keyboard: ↓ / PageDown / Space next scene, ↑ / PageUp / Shift+Space previous, Home / End.
