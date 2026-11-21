@@ -170,6 +170,18 @@ html.cinema {
 .cinema .scene:not([data-live]) *::before {
   animation-play-state: paused !important;
 }
+/* Scenery far off screen, and every scene while skipping, drops its ambient animations outright:
+   in WebKit even a paused transform animation keeps its own GPU layer, and with every scene drawn
+   that added up until iOS Safari killed the tab ("a problem repeatedly occurred"). They restart
+   from their first frame when the scene comes back, which reads as nothing. */
+.cinema .scene:not([data-live], [data-warm]) > .pl *,
+.cinema .scene:not([data-live], [data-warm]) > .pl *::before,
+.cinema .scene:not([data-live], [data-warm]) > .pl *::after,
+.skipping .scene > .pl *,
+.skipping .scene > .pl *::before,
+.skipping .scene > .pl *::after {
+  animation: none !important;
+}
 
 .pl {
   position: absolute;
@@ -181,6 +193,11 @@ html.cinema {
 .cinema .scene:is([data-live], [data-warm]) > .pl,
 .cinema .scene:is([data-live], [data-warm]) > .pl-main {
   will-change: transform, opacity;
+}
+/* While skipping the scenes are cut, not animated: they paint flat into the one .screen layer
+   instead of 4 full-screen layers per scene flashed by (the memory spike that crashed iOS Safari). */
+.skipping .scene > :is(.pl, .pl-main) {
+  will-change: auto !important;
 }
 
 /* Light version, for weak devices or a measured low frame rate (Film.tsx sets data-quality).
